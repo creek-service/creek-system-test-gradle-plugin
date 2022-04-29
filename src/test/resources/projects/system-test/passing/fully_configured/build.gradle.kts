@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-package org.creek;
+plugins {
+    id("org.creek.system.test")
+}
 
+repositories {
+    mavenLocal() // Todo:
+    mavenCentral()
 
-import org.creek.api.test.conformity.ConformityTester;
-import org.creek.api.test.conformity.check.CheckModule;
-import org.junit.jupiter.api.Test;
-
-class ModuleTest {
-
-    @Test
-    void shouldConform() {
-        ConformityTester.builder(ModuleTest.class)
-                // Todo:
-                .withDisabled("Can a plugin be a module?", CheckModule.builder())
-                .check();
+    maven {
+        url = uri("https://maven.pkg.github.com/creek-service/*")
+        credentials {
+            username = "Creek-Bot-Token"
+            password = "\u0067hp_LtyvXrQZen3WlKenUhv21Mg6NG38jn0AO2YH"
+        }
     }
+}
+
+systemTest {
+    additionalExecutorArguments.set(listOf("--echo-only"))
+
+    testDirectory.set(file("$projectDir/custom-test"))
+    resultDirectory.set(file("$buildDir/custom-result"))
+    verificationTimeoutSeconds.set("90");
+    suitePathPattern.set(".*include.*")
 }

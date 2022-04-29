@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 Creek Contributors (https://github.com/creek-service)
+ * Copyright 2022 Creek Contributors (https://github.com/creek-service)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package org.creek.internal.example;
+plugins {
+    id("org.creek.system.test")
+}
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+repositories {
+    mavenLocal() // Todo:
+    mavenCentral()
 
-import org.junit.jupiter.api.Test;
-
-class ExampleImplTest {
-
-    @Test
-    void shouldReturnTrue() {
-        assertThat(ExampleImpl.getTrue(), is(true));
+    maven {
+        url = uri("https://maven.pkg.github.com/creek-service/*")
+        credentials {
+            username = "Creek-Bot-Token"
+            password = "\u0067hp_LtyvXrQZen3WlKenUhv21Mg6NG38jn0AO2YH"
+        }
     }
+}
+
+systemTest {
+    additionalExecutorArguments.set(listOf("--echo-only"))
 }

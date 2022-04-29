@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 Creek Contributors (https://github.com/creek-service)
+ * Copyright 2022 Creek Contributors (https://github.com/creek-service)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,27 @@
  * limitations under the License.
  */
 
-package org.creek.api.example;
+plugins {
+    id("org.creek.system.test")
+}
 
-public interface Example {}
+repositories {
+    mavenLocal() // Todo:
+    mavenCentral()
+
+    maven {
+        url = uri("https://maven.pkg.github.com/creek-service/*")
+        credentials {
+            username = "Creek-Bot-Token"
+            password = "\u0067hp_LtyvXrQZen3WlKenUhv21Mg6NG38jn0AO2YH"
+        }
+    }
+}
+
+dependencies {
+    systemTest("org.creek:creek-system-test-executor:0.1.10")
+}
+
+systemTest {
+    additionalExecutorArguments.set(listOf("--echo-only"))
+}

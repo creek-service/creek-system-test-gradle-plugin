@@ -6,3 +6,5 @@
 # Creek System Test Gradle Plugin
 
 A gradle plugin for running Creek system tests as part of a Gradle build.
+
+Todo: help in both groovy and kotlin.
