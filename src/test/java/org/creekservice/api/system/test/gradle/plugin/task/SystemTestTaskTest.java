@@ -74,7 +74,7 @@ class SystemTestTaskTest {
     void shouldSkipIfTestDirectoryEmpty(final String flavour) {
         // Given:
         givenProject(flavour + "/empty");
-        givenDirectory("src/system-test");
+        givenDefaultSystemTestDirectory();
 
         // When:
 
@@ -183,7 +183,7 @@ class SystemTestTaskTest {
     void shouldExecuteWithOptions(final String flavour) {
         // Given:
         givenProject(flavour + "/empty");
-        givenTestSuite("src/system-test");
+        givenTestSuite();
 
         // When:
         final BuildResult result =
@@ -203,13 +203,13 @@ class SystemTestTaskTest {
         TestPaths.copy(TEST_DIR.resolve(projectPath), projectDir);
     }
 
-    private void givenDirectory(final String path) {
-        TestPaths.ensureDirectories(projectDir.resolve(path));
+    private void givenDefaultSystemTestDirectory() {
+        TestPaths.ensureDirectories(projectDir.resolve("src/system-test"));
     }
 
-    private void givenTestSuite(final String path) {
-        givenDirectory(path);
-        TestPaths.write(projectDir.resolve(path).resolve("test-suite.yml"), "");
+    private void givenTestSuite() {
+        givenDefaultSystemTestDirectory();
+        TestPaths.write(projectDir.resolve("src/system-test/test-suite.yml"), "");
     }
 
     private enum ExpectedOutcome {
