@@ -2,11 +2,11 @@ plugins {
     java
     jacoco
     `maven-publish`
+    `java-gradle-plugin`
     id("com.github.spotbugs") version "5.0.6"                   // https://plugins.gradle.org/plugin/com.github.spotbugs
     id("com.diffplug.spotless") version "6.5.1"                 // https://plugins.gradle.org/plugin/com.diffplug.spotless
     id("pl.allegro.tech.build.axion-release") version "1.13.6"  // https://plugins.gradle.org/plugin/pl.allegro.tech.build.axion-release
     id("com.github.kt3k.coveralls") version "2.12.0"            // https://plugins.gradle.org/plugin/com.github.kt3k.coveralls
-    id("org.javamodularity.moduleplugin") version "1.8.10"      // https://plugins.gradle.org/plugin/org.javamodularity.moduleplugin
 }
 
 project.version = scmVersion.version
@@ -19,12 +19,11 @@ apply(plugin = "com.diffplug.spotless")
 apply(plugin = "com.github.spotbugs")
 apply(plugin = "maven-publish")
 
-group = "org.creek"
+group = "org.creekservice"
 
 java {
     withSourcesJar()
 
-    modularity.inferModulePath.set(false)
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
 }
@@ -62,6 +61,9 @@ val mockitoVersion: String by extra
 val hamcrestVersion : String by extra
 
 dependencies {
+    // Avoid non-test dependencies in plugins.
+
+    testImplementation("org.creek:creek-test-hamcrest:$creekVersion")
     testImplementation("org.creek:creek-test-util:$creekVersion")
     testImplementation("org.creek:creek-test-hamcrest:$creekVersion")
     testImplementation("org.creek:creek-test-conformity:$creekVersion")
@@ -92,6 +94,15 @@ tasks.test {
         showCauses = true
         showExceptions = true
         showStackTraces = true
+    }
+}
+
+gradlePlugin {
+    plugins {
+        register("CreekPlugin") {
+            id = "org.creekservice.system.test"
+            implementationClass = "org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin"
+        }
     }
 }
 
