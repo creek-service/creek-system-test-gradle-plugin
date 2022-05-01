@@ -50,7 +50,8 @@ class SystemTestTaskTest {
     @TempDir private Path projectDir;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
+        projectDir = projectDir.toRealPath();
         writeGradleProperties();
     }
 
@@ -97,12 +98,11 @@ class SystemTestTaskTest {
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
         assertThat(
                 result.getOutput(),
-                containsString(
-                        "--test-directory=/private" + projectDir.resolve("src/system-test")));
+                containsString("--test-directory=" + projectDir.resolve("src/system-test")));
         assertThat(
                 result.getOutput(),
                 containsString(
-                        "--result-directory=/private"
+                        "--result-directory="
                                 + projectDir.resolve("build/test-results/system-test")));
         assertThat(result.getOutput(), containsString("--verifier-timeout-seconds=60"));
         assertThat(result.getOutput(), containsString("--include-suites=.*"));
@@ -137,11 +137,10 @@ class SystemTestTaskTest {
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
         assertThat(
                 result.getOutput(),
-                containsString("--test-directory=/private" + projectDir.resolve("custom-test")));
+                containsString("--test-directory=" + projectDir.resolve("custom-test")));
         assertThat(
                 result.getOutput(),
-                containsString(
-                        "--result-directory=/private" + projectDir.resolve("build/custom-result")));
+                containsString("--result-directory=" + projectDir.resolve("build/custom-result")));
         assertThat(result.getOutput(), containsString("--verifier-timeout-seconds=120"));
         assertThat(result.getOutput(), containsString("--include-suites=.*include.*"));
     }
