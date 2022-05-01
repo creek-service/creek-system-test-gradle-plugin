@@ -19,12 +19,11 @@ apply(plugin = "com.diffplug.spotless")
 apply(plugin = "com.github.spotbugs")
 apply(plugin = "maven-publish")
 
-group = "org.creek"
+group = "org.creekservice"
 
 java {
     withSourcesJar()
 
-    modularity.inferModulePath.set(false) // Todo: needed?
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
 }
@@ -101,8 +100,8 @@ tasks.test {
 gradlePlugin {
     plugins {
         register("CreekPlugin") {
-            id = "org.creek.system.test"
-            implementationClass = "org.creek.internal.system.test.gradle.plugin.SystemTestPlugin"
+            id = "org.creekservice.system.test"
+            implementationClass = "org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin"
         }
     }
 }
