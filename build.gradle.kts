@@ -106,6 +106,40 @@ gradlePlugin {
     }
 }
 
+tasks.register("writeExecutorVersionFile") {
+    doLast {
+        val versionCheck by configurations.creating {
+            isCanBeConsumed = true
+            isCanBeConsumed = false
+
+            defaultDependencies{
+                add(project.dependencies.create("org.creek:creek-system-test-executor:$creekVersion"))
+            }
+        }
+
+        val resolved = versionCheck.resolve()
+
+        val pattern = Regex(".*creek-system-test-executor-(.*).jar$")
+        val executorVersion = resolved.stream()
+            .map { pattern.matchEntire(it.absolutePath) }
+            .filter { it != null}
+            .map { it!!.groupValues[1] }
+            .findFirst()
+            .orElseThrow { RuntimeException("Did not find test creek-system-test-executor jar in:\n${resolved.joinToString("\n")}") }
+
+        val versionFile = file("$buildDir/generated/resources/version/creek-system-test-executor.version")
+
+        logger.info("Writing creek-system-test-executor version: $executorVersion to $versionFile")
+
+        versionFile.parentFile.mkdirs()
+        versionFile.writeText(executorVersion)
+
+        sourceSets.main.get().output.dir(mapOf("buildBy" to "writeExecutorVersionFile"), versionFile.parentFile)
+    }
+}
+
+tasks.processResources {dependsOn(":writeExecutorVersionFile")}
+
 spotless {
     java {
         googleJavaFormat("1.12.0").aosp()
