@@ -17,6 +17,7 @@
 package org.creekservice.api.system.test.gradle.plugin.task;
 
 import static org.creek.api.test.util.coverage.CodeCoverage.codeCoverageCmdLineArg;
+import static org.creekservice.api.system.test.gradle.plugin.ExecutorVersion.defaultExecutorVersion;
 import static org.gradle.testkit.runner.TaskOutcome.FAILED;
 import static org.gradle.testkit.runner.TaskOutcome.NO_SOURCE;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
@@ -106,6 +107,23 @@ class SystemTestTaskTest {
                                 + projectDir.resolve("build/test-results/system-test")));
         assertThat(result.getOutput(), containsString("--verifier-timeout-seconds=60"));
         assertThat(result.getOutput(), containsString("--include-suites=.*"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"kotlin", "groovy"})
+    void shouldExecuteWithDefaultVersion(final String flavour) {
+        // Given:
+        givenProject(flavour + "/default");
+
+        // When:
+
+        final BuildResult result = executeTask(ExpectedOutcome.PASS);
+
+        // Then:
+        assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
+        assertThat(
+                result.getOutput(),
+                containsString("SystemTestExecutor: " + defaultExecutorVersion()));
     }
 
     @ParameterizedTest

@@ -16,6 +16,7 @@
 
 package org.creekservice.api.system.test.gradle.plugin;
 
+import static org.creekservice.api.system.test.gradle.plugin.ExecutorVersion.defaultExecutorVersion;
 
 import java.time.Duration;
 import java.util.List;
@@ -85,7 +86,7 @@ public final class SystemTestPlugin implements Plugin<Project> {
         cfg.setCanBeResolved(true);
         cfg.setDescription("Dependency for the system test executor");
 
-        final String pluginDep = "org.creek:creek-system-test-executor:+";
+        final String pluginDep = "org.creek:creek-system-test-executor:" + defaultExecutorVersion();
         final DependencyHandler projectDeps = project.getDependencies();
         cfg.defaultDependencies(deps -> deps.add(projectDeps.create(pluginDep)));
 
