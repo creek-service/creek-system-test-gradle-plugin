@@ -16,10 +16,10 @@
 
 package org.creekservice.api.system.test.gradle.plugin;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Util to load the default executor version from the creek-system-test-executor.version resource in
@@ -37,14 +37,14 @@ public final class ExecutorVersion {
 
     // @VisibleForTesting
     static String loadResource(final String resourceName) {
-        final URL resource = ExecutorVersion.class.getResource(resourceName);
-        if (resource == null) {
-            throw new IllegalStateException("Jar does not contain " + resourceName + " resource");
-        }
+        try (InputStream resource = ExecutorVersion.class.getResourceAsStream(resourceName)) {
+            if (resource == null) {
+                throw new IllegalStateException(
+                        "Jar does not contain " + resourceName + " resource");
+            }
 
-        try {
-            return Files.readString(Paths.get(resource.toURI()));
-        } catch (Exception e) {
+            return new String(resource.readAllBytes(), UTF_8);
+        } catch (final IOException e) {
             throw new RuntimeException("Failed to read " + resourceName + " resource", e);
         }
     }
