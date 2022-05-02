@@ -129,8 +129,6 @@ tasks.register("writeExecutorVersionFile") {
 
         val versionFile = file("$buildDir/generated/resources/version/creek-system-test-executor.version")
 
-        // Todo:
-        println("Writing creek-system-test-executor version: $executorVersion to $versionFile")
         logger.info("Writing creek-system-test-executor version: $executorVersion to $versionFile")
 
         versionFile.parentFile.mkdirs()
