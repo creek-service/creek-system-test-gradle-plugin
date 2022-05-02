@@ -20,6 +20,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 
 /**
  * Util to load the default executor version from the {@code creek-system-test-executor.version}
@@ -37,6 +40,18 @@ public final class ExecutorVersion {
 
     // @VisibleForTesting
     static String loadResource(final String resourceName) {
+        // Todo: Debugging test failure:
+        final ProtectionDomain protectionDomain = ExecutorVersion.class.getProtectionDomain();
+        System.err.println("protectionDomain: " + protectionDomain);
+        final CodeSource codeSource = protectionDomain.getCodeSource();
+        System.err.println("codeSource: " + codeSource);
+        System.err.println("location: " + codeSource.getLocation());
+
+        final URL r0 = ExecutorVersion.class.getResource(resourceName);
+        System.err.println("r0: " + r0);
+        final URL r1 = ExecutorVersion.class.getResource("creek-system-test-executor.version");
+        System.err.println("r1: " + r1);
+
         try (InputStream resource = ExecutorVersion.class.getResourceAsStream(resourceName)) {
             if (resource == null) {
                 throw new IllegalStateException(
