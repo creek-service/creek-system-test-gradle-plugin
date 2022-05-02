@@ -39,6 +39,13 @@ class ExecutorVersionTest {
                                         .resolve(
                                                 "resources/main/creek-system-test-executor.version")));
 
+        System.err.println(
+                "resource file exists: "
+                        + Files.isRegularFile(
+                                TestPaths.moduleRoot("build")
+                                        .resolve(
+                                                "generated/resources/version/creek-system-test-executor.version")));
+
         assertThat(defaultExecutorVersion(), is(not("")));
     }
 
