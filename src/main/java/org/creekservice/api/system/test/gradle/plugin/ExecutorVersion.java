@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Util to load the default executor version from the creek-system-test-executor.version resource in
- * the jar.
+ * Util to load the default executor version from the {@code creek-system-test-executor.version}
+ * resource in the jar.
  */
 public final class ExecutorVersion {
 
