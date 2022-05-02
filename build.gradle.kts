@@ -127,9 +127,12 @@ tasks.register("writeExecutorVersionFile") {
             .findFirst()
             .orElseThrow { RuntimeException("Did not find test creek-system-test-executor jar in:\n${resolved.joinToString("\n")}") }
 
-        logger.info("Writing creek-system-test-executor version:$executorVersion")
-
         val versionFile = file("$buildDir/resources/main/creek-system-test-executor.version")
+
+        // Todo:
+        println("Writing creek-system-test-executor version: $executorVersion to $versionFile")
+        logger.info("Writing creek-system-test-executor version: $executorVersion to $versionFile")
+
         versionFile.parentFile.mkdirs()
         versionFile.writeText(executorVersion)
     }
