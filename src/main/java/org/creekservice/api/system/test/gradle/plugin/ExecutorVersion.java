@@ -52,6 +52,14 @@ public final class ExecutorVersion {
         final URL r1 = ExecutorVersion.class.getResource("creek-system-test-executor.version");
         System.err.println("r1: " + r1);
 
+        final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        System.err.println("cp: " + classLoader);
+
+        final URL r2 = classLoader.getResource(resourceName);
+        System.err.println("r2: " + r2);
+        final URL r3 = classLoader.getResource("creek-system-test-executor.version");
+        System.err.println("r3: " + r3);
+
         try (InputStream resource = ExecutorVersion.class.getResourceAsStream(resourceName)) {
             if (resource == null) {
                 throw new IllegalStateException(

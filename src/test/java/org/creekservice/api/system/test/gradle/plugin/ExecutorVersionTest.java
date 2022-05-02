@@ -23,12 +23,22 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.nio.file.Files;
+import org.creek.api.test.util.TestPaths;
 import org.junit.jupiter.api.Test;
 
 class ExecutorVersionTest {
 
     @Test
     void shouldLoadVersion() {
+        // Todo: Test failuring debugging:
+        System.err.println(
+                "resource file exists: "
+                        + Files.isRegularFile(
+                                TestPaths.moduleRoot("build")
+                                        .resolve(
+                                                "resources/main/creek-system-test-executor.version")));
+
         assertThat(defaultExecutorVersion(), is(not("")));
     }
 
