@@ -34,18 +34,18 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junitpioneer.jupiter.cartesian.CartesianTest;
+import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 
 @SuppressWarnings("ConstantConditions")
 class SystemTestTaskTest {
 
-    public static final Path PROJECT_DIR = TestPaths.projectRoot("src");
-    public static final Path BUILD_DIR = PROJECT_DIR.resolve("build").toAbsolutePath();
-    public static final Path TEST_DIR =
+    private static final Path PROJECT_DIR = TestPaths.projectRoot("src");
+    private static final Path BUILD_DIR = PROJECT_DIR.resolve("build").toAbsolutePath();
+    private static final Path TEST_DIR =
             PROJECT_DIR.resolve("src/test/resources/projects/functional").toAbsolutePath();
 
-    public static final String TASK_NAME = ":systemTest";
+    private static final String TASK_NAME = ":systemTest";
     private static final String INIT_SCRIPT = "--init-script=" + TEST_DIR.resolve("init.gradle");
 
     @TempDir private Path projectDir;
@@ -56,44 +56,44 @@ class SystemTestTaskTest {
         writeGradleProperties();
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"kotlin", "groovy"})
-    void shouldSkipIfTestDirectoryDoesNotExist(final String flavour) {
+    @CartesianTest
+    void shouldSkipIfTestDirectoryDoesNotExist(
+            @Values(strings = {"kotlin", "groovy"}) final String flavour,
+            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
         // Given:
         givenProject(flavour + "/empty");
 
         // When:
-
-        final BuildResult result = executeTask(ExpectedOutcome.PASS);
+        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(NO_SOURCE));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"kotlin", "groovy"})
-    void shouldSkipIfTestDirectoryEmpty(final String flavour) {
+    @CartesianTest
+    void shouldSkipIfTestDirectoryEmpty(
+            @Values(strings = {"kotlin", "groovy"}) final String flavour,
+            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
         // Given:
         givenProject(flavour + "/empty");
         givenDefaultSystemTestDirectory();
 
         // When:
-
-        final BuildResult result = executeTask(ExpectedOutcome.PASS);
+        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(NO_SOURCE));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"kotlin", "groovy"})
-    void shouldExecuteWithDefaults(final String flavour) {
+    @CartesianTest
+    void shouldExecuteWithDefaults(
+            @Values(strings = {"kotlin", "groovy"}) final String flavour,
+            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
         // Given:
         givenProject(flavour + "/default");
 
         // When:
-
-        final BuildResult result = executeTask(ExpectedOutcome.PASS);
+        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
@@ -109,15 +109,15 @@ class SystemTestTaskTest {
         assertThat(result.getOutput(), containsString("--include-suites=.*"));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"kotlin", "groovy"})
-    void shouldExecuteWithDefaultVersion(final String flavour) {
+    @CartesianTest
+    void shouldExecuteWithDefaultVersion(
+            @Values(strings = {"kotlin", "groovy"}) final String flavour,
+            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
         // Given:
         givenProject(flavour + "/default");
 
         // When:
-
-        final BuildResult result = executeTask(ExpectedOutcome.PASS);
+        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
@@ -126,30 +126,30 @@ class SystemTestTaskTest {
                 containsString("SystemTestExecutor: " + defaultExecutorVersion()));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"kotlin", "groovy"})
-    void shouldExecuteWithSpecificVersion(final String flavour) {
+    @CartesianTest
+    void shouldExecuteWithSpecificVersion(
+            @Values(strings = {"kotlin", "groovy"}) final String flavour,
+            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
         // Given:
         givenProject(flavour + "/specific_version");
 
         // When:
-
-        final BuildResult result = executeTask(ExpectedOutcome.PASS);
+        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
         assertThat(result.getOutput(), containsString("SystemTestExecutor: 0.1.13"));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"kotlin", "groovy"})
-    void shouldExecuteWithCustomProperties(final String flavour) {
+    @CartesianTest
+    void shouldExecuteWithCustomProperties(
+            @Values(strings = {"kotlin", "groovy"}) final String flavour,
+            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
         // Given:
         givenProject(flavour + "/fully_configured");
 
         // When:
-
-        final BuildResult result = executeTask(ExpectedOutcome.PASS);
+        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
@@ -163,15 +163,15 @@ class SystemTestTaskTest {
         assertThat(result.getOutput(), containsString("--include-suites=.*include.*"));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"kotlin", "groovy"})
-    void shouldFailIfSystemTestConfigurationDoesNotContainExecutor(final String flavour) {
+    @CartesianTest
+    void shouldFailIfSystemTestConfigurationDoesNotContainExecutor(
+            @Values(strings = {"kotlin", "groovy"}) final String flavour,
+            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
         // Given:
         givenProject(flavour + "/missing_executor_dep");
 
         // When:
-
-        final BuildResult result = executeTask(ExpectedOutcome.FAIL);
+        final BuildResult result = executeTask(ExpectedOutcome.FAIL, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(FAILED));
@@ -181,24 +181,25 @@ class SystemTestTaskTest {
                         "No system test executor dependency found in systemTest configuration."));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"kotlin", "groovy"})
-    void shouldFailOnBadConfig(final String flavour) {
+    @CartesianTest
+    void shouldFailOnBadConfig(
+            @Values(strings = {"kotlin", "groovy"}) final String flavour,
+            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
         // Given:
         givenProject(flavour + "/invalid_config");
 
         // When:
-
-        final BuildResult result = executeTask(ExpectedOutcome.FAIL);
+        final BuildResult result = executeTask(ExpectedOutcome.FAIL, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(FAILED));
         assertThat(result.getOutput(), containsString("Invalid value for option"));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"kotlin", "groovy"})
-    void shouldExecuteWithOptions(final String flavour) {
+    @CartesianTest
+    void shouldExecuteWithOptions(
+            @Values(strings = {"kotlin", "groovy"}) final String flavour,
+            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
         // Given:
         givenProject(flavour + "/empty");
         givenTestSuite();
@@ -207,6 +208,7 @@ class SystemTestTaskTest {
         final BuildResult result =
                 executeTask(
                         ExpectedOutcome.PASS,
+                        gradleVersion,
                         "--extra-argument=--echo-only",
                         "--verification-timeout-seconds=76",
                         "--include-suites=.*cli.*");
@@ -236,15 +238,18 @@ class SystemTestTaskTest {
     }
 
     private BuildResult executeTask(
-            final ExpectedOutcome expectedOutcome, final String... additionalArgs) {
-        final List<String> args = new ArrayList<>(List.of(INIT_SCRIPT, TASK_NAME));
+            final ExpectedOutcome expectedOutcome,
+            final String gradleVersion,
+            final String... additionalArgs) {
+        final List<String> args = new ArrayList<>(List.of(INIT_SCRIPT, "--stacktrace", TASK_NAME));
         args.addAll(List.of(additionalArgs));
 
         final GradleRunner runner =
                 GradleRunner.create()
                         .withProjectDir(projectDir.toFile())
                         .withArguments(args)
-                        .withPluginClasspath();
+                        .withPluginClasspath()
+                        .withGradleVersion(gradleVersion);
 
         final BuildResult result =
                 expectedOutcome == ExpectedOutcome.FAIL ? runner.buildAndFail() : runner.build();

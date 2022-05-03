@@ -7,6 +7,9 @@
 
 A Gradle plugin for running Creek system tests as part of a Gradle build.
 
+> ## NOTE
+> The plugin works with Gradle 6.4 and above.
+
 If following standard patterns, for example storing test packages under `src/system-test`, then simply applying
 the plugin should be sufficient:
 
