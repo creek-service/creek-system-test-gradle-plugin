@@ -25,6 +25,8 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
+import org.gradle.api.plugins.BasePlugin;
+import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.gradle.testing.base.plugins.TestingBasePlugin;
 
 /** Plugin for running Creek system tests. */
@@ -42,6 +44,8 @@ public final class SystemTestPlugin implements Plugin<Project> {
 
     @Override
     public void apply(final Project project) {
+        project.getPluginManager().apply(BasePlugin.class);
+
         final SystemTestExtension extension = registerExtension(project);
         registerSystemTestTask(project, extension);
         registerSystemTestEngineConfiguration(project);
@@ -76,6 +80,9 @@ public final class SystemTestPlugin implements Plugin<Project> {
         task.getExtraArguments().set(extension.getExtraArguments());
         task.getVerificationTimeoutSeconds().set(extension.getVerificationTimeoutSeconds());
         task.getSuitesPathPattern().set(extension.getSuitePathPattern());
+
+        project.getTasksByName(LifecycleBasePlugin.CHECK_TASK_NAME, false)
+                .forEach(checkTask -> checkTask.dependsOn(task));
     }
 
     private void registerSystemTestEngineConfiguration(final Project project) {
