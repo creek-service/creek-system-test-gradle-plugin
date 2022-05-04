@@ -16,8 +16,8 @@
 
 package org.creekservice.api.system.test.gradle.plugin.task;
 
-import static org.creek.api.test.util.coverage.CodeCoverage.codeCoverageCmdLineArg;
 import static org.creekservice.api.system.test.gradle.plugin.ExecutorVersion.defaultExecutorVersion;
+import static org.creekservice.api.test.util.coverage.CodeCoverage.codeCoverageCmdLineArg;
 import static org.gradle.testkit.runner.TaskOutcome.FAILED;
 import static org.gradle.testkit.runner.TaskOutcome.NO_SOURCE;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
@@ -30,7 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import org.creek.api.test.util.TestPaths;
+import org.creekservice.api.test.util.TestPaths;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.BeforeEach;
@@ -139,7 +139,7 @@ class SystemTestTaskTest {
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
-        assertThat(result.getOutput(), containsString("SystemTestExecutor: 0.1.13"));
+        assertThat(result.getOutput(), containsString("SystemTestExecutor: 0.2.0-SNAPSHOT"));
     }
 
     @CartesianTest

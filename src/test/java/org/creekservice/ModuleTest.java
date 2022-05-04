@@ -17,8 +17,8 @@
 package org.creekservice;
 
 
-import org.creek.api.test.conformity.ConformityTester;
-import org.creek.api.test.conformity.check.CheckModule;
+import org.creekservice.api.test.conformity.ConformityTester;
+import org.creekservice.api.test.conformity.check.CheckModule;
 import org.junit.jupiter.api.Test;
 
 class ModuleTest {

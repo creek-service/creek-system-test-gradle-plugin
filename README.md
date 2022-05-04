@@ -38,6 +38,9 @@ The plugin defines the following tasks:
 
 ### `systemTest` Task
 
+> ## NOTE
+> Details of how to write system tests can be found in the [Creek System Test Repo][1].
+
 The `systemTest` task executes the system tests. Aside from the customisations possible using the 
 [`systemTest` extension](#extension), the task accepts the following command line options:
 
@@ -122,7 +125,7 @@ plugins {
 }
 
 dependencies {
-    systemTest 'org.creek:creek-system-test-executor:0.1.13'
+    systemTest 'org.creekservice:creek-system-test-executor:0.2.0'
 }
 ```
 
@@ -133,6 +136,8 @@ plugins {
 }
 
 dependencies {
-    systemTest("org.creek:creek-system-test-executor:0.1.13")
+    systemTest("org.creekservice:creek-system-test-executor:0.2.0")
 }
 ```
+
+[1]: https://github.com/creek-service/creek-system-test

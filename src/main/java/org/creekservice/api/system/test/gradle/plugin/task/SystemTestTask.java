@@ -100,7 +100,8 @@ public abstract class SystemTestTask extends DefaultTask {
                 .javaexec(
                         spec -> {
                             spec.getMainClass()
-                                    .set("org.creek.api.system.test.executor.SystemTestExecutor");
+                                    .set(
+                                            "org.creekservice.api.system.test.executor.SystemTestExecutor");
                             spec.setClasspath(classPath);
                             spec.setArgs(arguments());
                         });
@@ -113,7 +114,7 @@ public abstract class SystemTestTask extends DefaultTask {
 
         final Optional<Dependency> executorDep =
                 configuration.getDependencies().stream()
-                        .filter(dep -> "org.creek".equals(dep.getGroup()))
+                        .filter(dep -> "org.creekservice".equals(dep.getGroup()))
                         .filter(dep -> "creek-system-test-executor".equals(dep.getName()))
                         .findFirst();
 
