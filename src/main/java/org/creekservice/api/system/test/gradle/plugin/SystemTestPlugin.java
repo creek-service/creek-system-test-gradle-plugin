@@ -93,7 +93,8 @@ public final class SystemTestPlugin implements Plugin<Project> {
         cfg.setCanBeResolved(true);
         cfg.setDescription("Dependency for the system test executor");
 
-        final String pluginDep = "org.creek:creek-system-test-executor:" + defaultExecutorVersion();
+        final String pluginDep =
+                "org.creekservice:creek-system-test-executor:" + defaultExecutorVersion();
         final DependencyHandler projectDeps = project.getDependencies();
         cfg.defaultDependencies(deps -> deps.add(projectDeps.create(pluginDep)));
 

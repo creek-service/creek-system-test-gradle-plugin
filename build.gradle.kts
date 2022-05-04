@@ -41,7 +41,8 @@ repositories {
 }
 
 extra.apply {
-    set("creekVersion", "0.+")
+    set("creekTestVersion", "0.2.0-SNAPSHOT")
+    set("creekSystemTestVersion", "0.2.0-SNAPSHOT")
     set("spotBugsVersion", "4.6.0")         // https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-annotations
 
     set("log4jVersion", "2.17.2")           // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
@@ -52,7 +53,8 @@ extra.apply {
     set("hamcrestVersion", "2.2")           // https://mvnrepository.com/artifact/org.hamcrest/hamcrest-core
 }
 
-val creekVersion : String by extra
+val creekTestVersion : String by extra
+val creekSystemTestVersion : String by extra
 val guavaVersion : String by extra
 val log4jVersion : String by extra
 val junitVersion: String by extra
@@ -63,10 +65,9 @@ val hamcrestVersion : String by extra
 dependencies {
     // Avoid non-test dependencies in plugins.
 
-    testImplementation("org.creek:creek-test-hamcrest:$creekVersion")
-    testImplementation("org.creek:creek-test-util:$creekVersion")
-    testImplementation("org.creek:creek-test-hamcrest:$creekVersion")
-    testImplementation("org.creek:creek-test-conformity:$creekVersion")
+    testImplementation("org.creekservice:creek-test-hamcrest:$creekTestVersion")
+    testImplementation("org.creekservice:creek-test-util:$creekTestVersion")
+    testImplementation("org.creekservice:creek-test-conformity:$creekTestVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
     testImplementation("org.junit-pioneer:junit-pioneer:$junitPioneerVersion")
@@ -77,6 +78,8 @@ dependencies {
     testImplementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
     testImplementation("org.apache.logging.log4j:log4j-slf4j18-impl:$log4jVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    // The following dependency is only added to trigger the Github Dependency Bot to update creekSystemTestVersion:
+    testRuntimeOnly("org.creekservice:creek-system-test-executor:$creekSystemTestVersion")
 }
 
 tasks.compileJava {
@@ -106,39 +109,23 @@ gradlePlugin {
     }
 }
 
-tasks.register("writeExecutorVersionFile") {
+tasks.register("writeVersionFile") {
+    val outputDir = file("$buildDir/generated/resources/version")
+    val versionFile = file("$outputDir/creek-system-test-executor.version")
+    sourceSets.main.get().output.dir(mapOf("buildBy" to "writeVersionFile"), outputDir)
+
+    inputs.property("executorVersion", creekSystemTestVersion)
+    outputs.dir(outputDir).withPropertyName("outputDir")
+
     doLast {
-        val versionCheck by configurations.creating {
-            isCanBeConsumed = true
-            isCanBeConsumed = false
+        outputDir.mkdirs()
 
-            defaultDependencies{
-                add(project.dependencies.create("org.creek:creek-system-test-executor:$creekVersion"))
-            }
-        }
-
-        val resolved = versionCheck.resolve()
-
-        val pattern = Regex(".*creek-system-test-executor-(.*).jar$")
-        val executorVersion = resolved.stream()
-            .map { pattern.matchEntire(it.absolutePath) }
-            .filter { it != null}
-            .map { it!!.groupValues[1] }
-            .findFirst()
-            .orElseThrow { RuntimeException("Did not find test creek-system-test-executor jar in:\n${resolved.joinToString("\n")}") }
-
-        val versionFile = file("$buildDir/generated/resources/version/creek-system-test-executor.version")
-
-        logger.info("Writing creek-system-test-executor version: $executorVersion to $versionFile")
-
-        versionFile.parentFile.mkdirs()
-        versionFile.writeText(executorVersion)
-
-        sourceSets.main.get().output.dir(mapOf("buildBy" to "writeExecutorVersionFile"), versionFile.parentFile)
+        logger.info("Writing creek-system-test-executor version: $creekSystemTestVersion to $versionFile")
+        versionFile.writeText(creekSystemTestVersion)
     }
 }
 
-tasks.processResources {dependsOn(":writeExecutorVersionFile")}
+tasks.processResources {dependsOn(":writeVersionFile")}
 
 spotless {
     java {
