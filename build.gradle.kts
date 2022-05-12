@@ -76,7 +76,7 @@ dependencies {
     testImplementation("com.google.guava:guava-testlib:$guavaVersion")
     testImplementation("org.apache.logging.log4j:log4j-api:$log4jVersion")
     testImplementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
-    testImplementation("org.apache.logging.log4j:log4j-slf4j18-impl:$log4jVersion")
+    testRuntimeOnly("org.apache.logging.log4j:log4j-slf4j18-impl:$log4jVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
     // The following dependency is only added to trigger the Github Dependency Bot to update creekSystemTestVersion:
     testRuntimeOnly("org.creekservice:creek-system-test-executor:$creekSystemTestVersion")

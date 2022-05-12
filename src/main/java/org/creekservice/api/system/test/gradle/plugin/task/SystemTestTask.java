@@ -16,6 +16,8 @@
 
 package org.creekservice.api.system.test.gradle.plugin.task;
 
+import static org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin.EXECUTOR_DEP_ARTEFACT_NAME;
+import static org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin.EXECUTOR_DEP_GROUP_NAME;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.file.ConfigurableFileCollection;
@@ -114,12 +117,12 @@ public abstract class SystemTestTask extends DefaultTask {
 
         final Optional<Dependency> executorDep =
                 configuration.getDependencies().stream()
-                        .filter(dep -> "org.creekservice".equals(dep.getGroup()))
-                        .filter(dep -> "creek-system-test-executor".equals(dep.getName()))
+                        .filter(dep -> EXECUTOR_DEP_GROUP_NAME.equals(dep.getGroup()))
+                        .filter(dep -> EXECUTOR_DEP_ARTEFACT_NAME.equals(dep.getName()))
                         .findFirst();
 
         if (executorDep.isEmpty()) {
-            throw new MissingExecutorDependency();
+            throw new MissingExecutorDependencyException();
         }
 
         getLogger().debug("Using system test executor version: " + executorDep.get().getVersion());
@@ -142,13 +145,16 @@ public abstract class SystemTestTask extends DefaultTask {
         return arguments;
     }
 
-    private static final class MissingExecutorDependency extends RuntimeException {
+    private static final class MissingExecutorDependencyException extends GradleException {
 
-        MissingExecutorDependency() {
+        MissingExecutorDependencyException() {
             super(
                     "No system test executor dependency found in "
                             + SystemTestPlugin.CONFIGURATION_NAME
-                            + " configuration.");
+                            + " configuration. Please ensure the configuration contains "
+                            + EXECUTOR_DEP_GROUP_NAME
+                            + ":"
+                            + EXECUTOR_DEP_ARTEFACT_NAME);
         }
     }
 }

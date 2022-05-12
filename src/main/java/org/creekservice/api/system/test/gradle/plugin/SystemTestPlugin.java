@@ -33,7 +33,7 @@ import org.gradle.testing.base.plugins.TestingBasePlugin;
 public final class SystemTestPlugin implements Plugin<Project> {
 
     public static final String EXTENSION_NAME = "systemTest";
-    public static final String CONFIGURATION_NAME = "systemTest";
+    public static final String CONFIGURATION_NAME = "systemTestExecutor";
     public static final String SYSTEM_TEST_TASK_NAME = "systemTest";
     public static final String GROUP_NAME = "Creek";
     public static final String DEFAULT_TESTS_DIR_NAME = "src/system-test";
@@ -41,6 +41,8 @@ public final class SystemTestPlugin implements Plugin<Project> {
             TestingBasePlugin.TEST_RESULTS_DIR_NAME + "/system-test";
     public static final Duration DEFAULT_EXPECTATION_TIMEOUT = Duration.ofMinutes(1);
     public static final String DEFAULT_SUITES_PATTERN = ".*";
+    public static final String EXECUTOR_DEP_GROUP_NAME = "org.creekservice";
+    public static final String EXECUTOR_DEP_ARTEFACT_NAME = "creek-system-test-executor";
 
     @Override
     public void apply(final Project project) {
@@ -91,10 +93,14 @@ public final class SystemTestPlugin implements Plugin<Project> {
         cfg.setTransitive(true);
         cfg.setCanBeConsumed(false);
         cfg.setCanBeResolved(true);
-        cfg.setDescription("Dependency for the system test executor");
+        cfg.setDescription("Dependency for the Creek system test executor");
 
         final String pluginDep =
-                "org.creekservice:creek-system-test-executor:" + defaultExecutorVersion();
+                EXECUTOR_DEP_GROUP_NAME
+                        + ":"
+                        + EXECUTOR_DEP_ARTEFACT_NAME
+                        + ":"
+                        + defaultExecutorVersion();
         final DependencyHandler projectDeps = project.getDependencies();
         cfg.defaultDependencies(deps -> deps.add(projectDeps.create(pluginDep)));
 

@@ -53,11 +53,17 @@ public abstract class SystemTestExtension {
      */
     public abstract Property<String> getSuitePathPattern();
 
-    /** @return list of additional arguments to pass to the test executor */
+    /**
+     * @return list of additional arguments to pass to the test executor
+     *     <p>See https://github.com/creek-service/creek-system-test/tree/main/executor for more
+     *     info.
+     */
     public abstract ListProperty<String> getExtraArguments();
 
     /**
-     * Set additional args to use when running system tests.
+     * Set additional args to pass to the test executor.
+     *
+     * <p>See https://github.com/creek-service/creek-system-test/tree/main/executor for more info.
      *
      * @param args the extra args to use when running system tests.
      */
