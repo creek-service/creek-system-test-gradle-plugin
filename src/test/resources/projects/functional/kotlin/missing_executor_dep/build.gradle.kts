@@ -20,7 +20,7 @@ plugins {
 
 dependencies {
     // Not an executor dependency!
-    systemTest("org.apache.logging.log4j:log4j-api:+")
+    systemTestExecutor("org.apache.logging.log4j:log4j-api:+")
 }
 
 systemTest {

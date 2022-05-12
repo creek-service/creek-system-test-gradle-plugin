@@ -19,7 +19,7 @@ plugins {
 }
 
 dependencies {
-    systemTest("org.creekservice:creek-system-test-executor:0.2.0-SNAPSHOT")
+    systemTestExecutor("org.creekservice:creek-system-test-executor:0.2.0-SNAPSHOT")
 }
 
 systemTest {
