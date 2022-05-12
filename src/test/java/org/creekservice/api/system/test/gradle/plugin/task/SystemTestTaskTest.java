@@ -29,14 +29,16 @@ import static org.hamcrest.Matchers.notNullValue;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.creekservice.api.test.util.TestPaths;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
+import org.junitpioneer.jupiter.cartesian.ArgumentSets;
 import org.junitpioneer.jupiter.cartesian.CartesianTest;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
+import org.junitpioneer.jupiter.cartesian.CartesianTest.MethodFactory;
 
 @SuppressWarnings("ConstantConditions")
 class SystemTestTaskTest {
@@ -58,9 +60,8 @@ class SystemTestTaskTest {
     }
 
     @CartesianTest
-    void shouldSkipIfTestDirectoryDoesNotExist(
-            @Values(strings = {"kotlin", "groovy"}) final String flavour,
-            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
+    @MethodFactory("flavoursAndVersions")
+    void shouldSkipIfTestDirectoryDoesNotExist(final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/empty");
 
@@ -72,9 +73,8 @@ class SystemTestTaskTest {
     }
 
     @CartesianTest
-    void shouldSkipIfTestDirectoryEmpty(
-            @Values(strings = {"kotlin", "groovy"}) final String flavour,
-            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
+    @MethodFactory("flavoursAndVersions")
+    void shouldSkipIfTestDirectoryEmpty(final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/empty");
         givenDirectory(projectDir.resolve("src/system-test"));
@@ -87,9 +87,8 @@ class SystemTestTaskTest {
     }
 
     @CartesianTest
-    void shouldExecuteWithDefaults(
-            @Values(strings = {"kotlin", "groovy"}) final String flavour,
-            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
+    @MethodFactory("flavoursAndVersions")
+    void shouldExecuteWithDefaults(final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/default");
 
@@ -108,29 +107,15 @@ class SystemTestTaskTest {
                                 + projectDir.resolve("build/test-results/system-test")));
         assertThat(result.getOutput(), containsString("--verifier-timeout-seconds=60"));
         assertThat(result.getOutput(), containsString("--include-suites=.*"));
-    }
 
-    @CartesianTest
-    void shouldExecuteWithDefaultVersion(
-            @Values(strings = {"kotlin", "groovy"}) final String flavour,
-            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
-        // Given:
-        givenProject(flavour + "/default");
-
-        // When:
-        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
-
-        // Then:
-        assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
         assertThat(
                 result.getOutput(),
                 containsString("SystemTestExecutor: " + defaultExecutorVersion()));
     }
 
     @CartesianTest
-    void shouldExecuteWithSpecificVersion(
-            @Values(strings = {"kotlin", "groovy"}) final String flavour,
-            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
+    @MethodFactory("flavoursAndVersions")
+    void shouldExecuteWithSpecificVersion(final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/specific_version");
 
@@ -143,9 +128,8 @@ class SystemTestTaskTest {
     }
 
     @CartesianTest
-    void shouldExecuteWithCustomProperties(
-            @Values(strings = {"kotlin", "groovy"}) final String flavour,
-            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
+    @MethodFactory("flavoursAndVersions")
+    void shouldExecuteWithCustomProperties(final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/fully_configured");
 
@@ -165,9 +149,9 @@ class SystemTestTaskTest {
     }
 
     @CartesianTest
+    @MethodFactory("flavoursAndVersions")
     void shouldFailIfSystemTestConfigurationDoesNotContainExecutor(
-            @Values(strings = {"kotlin", "groovy"}) final String flavour,
-            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
+            final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/missing_executor_dep");
 
@@ -179,13 +163,12 @@ class SystemTestTaskTest {
         assertThat(
                 result.getOutput(),
                 containsString(
-                        "No system test executor dependency found in systemTest configuration."));
+                        "No system test executor dependency found in systemTestExecutor configuration."));
     }
 
     @CartesianTest
-    void shouldFailOnBadConfig(
-            @Values(strings = {"kotlin", "groovy"}) final String flavour,
-            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
+    @MethodFactory("flavoursAndVersions")
+    void shouldFailOnBadConfig(final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/invalid_config");
 
@@ -198,9 +181,8 @@ class SystemTestTaskTest {
     }
 
     @CartesianTest
-    void shouldExecuteWithOptions(
-            @Values(strings = {"kotlin", "groovy"}) final String flavour,
-            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
+    @MethodFactory("flavoursAndVersions")
+    void shouldExecuteWithOptions(final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/empty");
         givenTestSuite();
@@ -221,9 +203,8 @@ class SystemTestTaskTest {
     }
 
     @CartesianTest
-    void shouldRunSystemTestAsPartOfCheckTask(
-            @Values(strings = {"kotlin", "groovy"}) final String flavour,
-            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
+    @MethodFactory("flavoursAndVersions")
+    void shouldRunSystemTestAsPartOfCheckTask(final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/default");
 
@@ -236,9 +217,8 @@ class SystemTestTaskTest {
     }
 
     @CartesianTest
-    void shouldDeleteOutputDirectoryOnClean(
-            @Values(strings = {"kotlin", "groovy"}) final String flavour,
-            @Values(strings = {"6.4", "6.9.2", "7.0", "7.3", "7.4.2"}) final String gradleVersion) {
+    @MethodFactory("flavoursAndVersions")
+    void shouldDeleteOutputDirectoryOnClean(final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/default");
         final Path resultsDir =
@@ -310,5 +290,13 @@ class SystemTestTaskTest {
                     projectDir.resolve("gradle.properties"),
                     "org.gradle.jvmargs=" + String.join(" ", options));
         }
+    }
+
+    @SuppressWarnings("unused") // Invoked by reflection
+    private static ArgumentSets flavoursAndVersions() {
+        final Collection<?> flavours = List.of("kotlin", "groovy");
+        final Collection<?> gradleVersions = List.of("6.4", "6.9.2", "7.0", "7.3", "7.4.2");
+        return ArgumentSets.argumentsForFirstParameter(flavours)
+                .argumentsForNextParameter(gradleVersions);
     }
 }
