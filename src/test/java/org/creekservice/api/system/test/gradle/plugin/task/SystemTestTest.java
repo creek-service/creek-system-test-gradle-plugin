@@ -41,7 +41,7 @@ import org.junitpioneer.jupiter.cartesian.CartesianTest;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.MethodFactory;
 
 @SuppressWarnings("ConstantConditions")
-class SystemTestTaskTest {
+class SystemTestTest {
 
     private static final Path PROJECT_DIR = TestPaths.projectRoot("src");
     private static final Path BUILD_DIR = PROJECT_DIR.resolve("build").toAbsolutePath();
