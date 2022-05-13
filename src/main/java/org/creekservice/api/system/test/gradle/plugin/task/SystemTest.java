@@ -41,11 +41,11 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.options.Option;
 
 /** Task for running Creek system tests. */
-public abstract class SystemTestTask extends DefaultTask {
+public abstract class SystemTest extends DefaultTask {
 
     private final ConfigurableFileCollection classPath;
 
-    public SystemTestTask() {
+    public SystemTest() {
         this.classPath = getProject().getObjects().fileCollection();
         classPath.from((Callable<Object>) this::getSystemTestDeps);
 

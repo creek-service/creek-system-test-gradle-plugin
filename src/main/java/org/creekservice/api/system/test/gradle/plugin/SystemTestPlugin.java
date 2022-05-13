@@ -20,7 +20,7 @@ import static org.creekservice.api.system.test.gradle.plugin.ExecutorVersion.def
 
 import java.time.Duration;
 import java.util.List;
-import org.creekservice.api.system.test.gradle.plugin.task.SystemTestTask;
+import org.creekservice.api.system.test.gradle.plugin.task.SystemTest;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -73,8 +73,7 @@ public final class SystemTestPlugin implements Plugin<Project> {
 
     private void registerSystemTestTask(
             final Project project, final SystemTestExtension extension) {
-        final SystemTestTask task =
-                project.getTasks().create(SYSTEM_TEST_TASK_NAME, SystemTestTask.class);
+        final SystemTest task = project.getTasks().create(SYSTEM_TEST_TASK_NAME, SystemTest.class);
 
         task.setGroup(GROUP_NAME);
         task.getTestDirectory().set(extension.getTestDirectory());
@@ -105,7 +104,7 @@ public final class SystemTestPlugin implements Plugin<Project> {
         cfg.defaultDependencies(deps -> deps.add(projectDeps.create(pluginDep)));
 
         project.getTasks()
-                .withType(SystemTestTask.class)
+                .withType(SystemTest.class)
                 .configureEach(task -> task.getSystemTestDeps().from(cfg));
     }
 }

@@ -32,12 +32,12 @@ plugins {
 
 The System Test plugin adds the following tasks to your project:
 
-### systemTest - [`SystemTestTask`][4]
+### systemTest - [`SystemTest`][4]
 
 > ### NOTE
 > Details of how to write system tests can be found in the [Creek System Test Repo][1].
 
-*Dependencies:* none
+*Dependencies:* none, yet: WIP
 *Dependants:* `check`
 
 The `systemTest` task executes any system tests found in the project. 
@@ -193,4 +193,4 @@ the `systemTest.resultDirectory` property.
 [1]: https://github.com/creek-service/creek-system-test
 [2]: https://docs.gradle.org/current/userguide/declaring_dependencies.html#sec:what-are-dependency-configurations
 [3]: https://github.com/creek-service/creek-system-test/tree/main/executor
-[4]: src/main/java/org/creekservice/api/system/test/gradle/plugin/task/SystemTestTask.java
+[4]: src/main/java/org/creekservice/api/system/test/gradle/plugin/task/SystemTest.java
