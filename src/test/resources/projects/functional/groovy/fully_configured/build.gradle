@@ -20,7 +20,7 @@ plugins {
     id 'org.creekservice.system.test'
 }
 
-systemTest {
+creek.systemTest {
     extraArguments "--echo-only"
 
     testDirectory = file("$projectDir/custom-test")
