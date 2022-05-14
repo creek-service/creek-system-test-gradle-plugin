@@ -18,6 +18,6 @@ plugins {
     id 'org.creekservice.system.test'
 }
 
-systemTest {
+creek.systemTest {
     extraArguments "--echo-only"
 }

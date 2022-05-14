@@ -26,13 +26,16 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.plugins.BasePlugin;
+import org.gradle.api.plugins.ExtensionAware;
+import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.gradle.testing.base.plugins.TestingBasePlugin;
 
 /** Plugin for running Creek system tests. */
 public final class SystemTestPlugin implements Plugin<Project> {
 
-    public static final String EXTENSION_NAME = "systemTest";
+    public static final String CREEK_EXTENSION_NAME = "creek";
+    public static final String TEST_EXTENSION_NAME = "systemTest";
     public static final String CONFIGURATION_NAME = "systemTestExecutor";
     public static final String SYSTEM_TEST_TASK_NAME = "systemTest";
     public static final String GROUP_NAME = "Creek";
@@ -54,8 +57,9 @@ public final class SystemTestPlugin implements Plugin<Project> {
     }
 
     private SystemTestExtension registerExtension(final Project project) {
+        final ExtensionAware creekExt = ensureCreekExtension(project);
         final SystemTestExtension extension =
-                project.getExtensions().create(EXTENSION_NAME, SystemTestExtension.class);
+                creekExt.getExtensions().create(TEST_EXTENSION_NAME, SystemTestExtension.class);
 
         extension
                 .getTestDirectory()
@@ -106,5 +110,21 @@ public final class SystemTestPlugin implements Plugin<Project> {
         project.getTasks()
                 .withType(SystemTest.class)
                 .configureEach(task -> task.getSystemTestDeps().from(cfg));
+    }
+
+    private <T extends ExtensionAware> ExtensionAware ensureCreekExtension(final Project project) {
+        final ExtensionContainer extensions = project.getExtensions();
+        final Object maybeExt = extensions.findByName(SystemTestPlugin.CREEK_EXTENSION_NAME);
+        if (maybeExt != null) {
+            return (ExtensionAware) maybeExt;
+        }
+
+        return extensions.create(SystemTestPlugin.CREEK_EXTENSION_NAME, CreekSpec.class);
+    }
+
+    public abstract static class CreekSpec implements ExtensionAware {
+
+        @Override
+        public abstract ExtensionContainer getExtensions();
     }
 }

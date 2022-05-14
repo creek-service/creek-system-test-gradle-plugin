@@ -233,6 +233,19 @@ class SystemTestTest {
         assertThat(Files.exists(resultsDir), is(false));
     }
 
+    @CartesianTest
+    @MethodFactory("flavoursAndVersions")
+    void shouldPlayNicelyWithOthers(final String flavour, final String gradleVersion) {
+        // Given:
+        givenProject(flavour + "/other_creek_plugin");
+
+        // When:
+        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
+
+        // Then:
+        assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
+    }
+
     private void givenProject(final String projectPath) {
         TestPaths.copy(TEST_DIR.resolve(projectPath), projectDir);
     }

@@ -18,7 +18,7 @@ plugins {
     id("org.creekservice.system.test")
 }
 
-systemTest {
+creek.systemTest {
     extraArguments("--echo-only")
 
     verificationTimeoutSeconds.set("not a number");
