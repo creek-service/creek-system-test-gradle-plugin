@@ -23,6 +23,6 @@ dependencies {
     systemTestExecutor("org.apache.logging.log4j:log4j-api:+")
 }
 
-systemTest {
+creek.systemTest {
     extraArguments("--echo-only")
 }

@@ -15,9 +15,13 @@
  */
 
 plugins {
+    // Add another creek plugin before hand to make sure system test plugin plays nicely with others:
+    id("org.creekservice.json.schema") version "0.2.0-SNAPSHOT"
     id("org.creekservice.system.test")
 }
 
-creek.systemTest {
-    extraArguments("--echo-only")
+creek {
+    systemTest {
+        extraArguments("--echo-only")
+    }
 }

@@ -37,7 +37,7 @@ The System Test plugin adds the following tasks to your project:
 > ### NOTE
 > Details of how to write system tests can be found in the [Creek System Test Repo][1].
 
-*Dependencies:* none, yet: WIP
+*Dependencies:* none, yet: WIP // Todo: should depend on jar?
 *Dependants:* `check`
 
 The `systemTest` task executes any system tests found in the project. 
@@ -75,21 +75,25 @@ The plugin will run whatever it finds, and handles anything which is missing.
 
 ### Changing the project layout
 
-You configure the project layout via the `systemTest` configuration. This is discussed in more detail in the following
+You configure the project layout via the `creek.systemTest` configuration. This is discussed in more detail in the following
 sections. Here is a brief example which changes the location under which system test packages are stored:
 
 ##### Groovy: Custom system test source directory
 ```groovy
-systemTest {
-    testDirectory = file("$projectDir/custom-test")
+creek {
+    systemTest {
+        testDirectory = file("$projectDir/custom-test")
+    }
 }
 ```
 
 ##### Kotlin: Custom system test source directory
 ```kotlin
-systemTest {
-    // Set a custom location for the test packages:
-    testDirectory.set(file("$projectDir/custom-test"))
+creek {
+    systemTest {
+        // Set a custom location for the test packages:
+        testDirectory.set(file("$projectDir/custom-test"))
+    }
 }
 ```
 
@@ -123,30 +127,30 @@ dependencies {
 
 When running a different version of the executor it may be that the executor supports command line options that
 are not exposed by the plugin. In such situations, you can pass extra arguments to the executor using the
-`extraArguments` method of the `systemTest` extension.
+`extraArguments` method of the `creek.systemTest` extension.
 
 ##### Groovy: Passing extra arguments to the generator
 ```groovy
-systemTest {
+creek.systemTest {
     extraArguments "--some", "--extra=arguments"
 }
 ```
 
 ##### Kotlin: Passing extra arguments to the generator
 ```kotlin
-systemTest {
+creek.systemTest {
     extraArguments("--some", "--extra=arguments")
 }
 ```
 
 ## System Test Extension
 
-The System Test plugin adds the `systemTest` extension. This allows you to configure a number of task related properties
+The System Test plugin adds the `creek.systemTest` extension. This allows you to configure a number of task related properties
 inside a dedicated DSL block.
 
 ##### Groovy: Using the `systemTest` extension
 ```groovy
-systemTest {
+creek.systemTest {
     // Set a custom location for the test packages:
     testDirectory = file("$projectDir/custom-test")
     
@@ -166,7 +170,7 @@ systemTest {
 
 ##### Kotlin: Using the `systemTest` extension
 ```kotlin
-systemTest {
+creek.systemTest {
     // Set a custom location for the test packages:
     testDirectory.set(file("$projectDir/custom-test"))
     
@@ -188,7 +192,7 @@ systemTest {
 
 The `systemTest` task generates XML JUnit style test results. 
 By default, these are written to `$buildDir/test-results/system-test`. The output location can be changed by setting
-the `systemTest.resultDirectory` property. 
+the `creek.systemTest.resultDirectory` property. 
 
 [1]: https://github.com/creek-service/creek-system-test
 [2]: https://docs.gradle.org/current/userguide/declaring_dependencies.html#sec:what-are-dependency-configurations
