@@ -36,7 +36,9 @@ public final class SystemTestPlugin implements Plugin<Project> {
 
     public static final String CREEK_EXTENSION_NAME = "creek";
     public static final String TEST_EXTENSION_NAME = "systemTest";
-    public static final String CONFIGURATION_NAME = "systemTestExecutor";
+    public static final String EXECUTOR_CONFIGURATION_NAME = "systemTestExecutor";
+    public static final String EXTENSION_CONFIGURATION_NAME = "systemTestExtension";
+    public static final String COMPONENT_CONFIGURATION_NAME = "systemTestComponent";
     public static final String SYSTEM_TEST_TASK_NAME = "systemTest";
     public static final String GROUP_NAME = "Creek";
     public static final String DEFAULT_TESTS_DIR_NAME = "src/system-test";
@@ -53,7 +55,9 @@ public final class SystemTestPlugin implements Plugin<Project> {
 
         final SystemTestExtension extension = registerExtension(project);
         registerSystemTestTask(project, extension);
-        registerSystemTestEngineConfiguration(project);
+        registerSystemTestExecutorConfiguration(project);
+        registerSystemTestExtensionConfiguration(project);
+        registerSystemTestComponentConfiguration(project);
     }
 
     private SystemTestExtension registerExtension(final Project project) {
@@ -90,8 +94,8 @@ public final class SystemTestPlugin implements Plugin<Project> {
                 .forEach(checkTask -> checkTask.dependsOn(task));
     }
 
-    private void registerSystemTestEngineConfiguration(final Project project) {
-        final Configuration cfg = project.getConfigurations().create(CONFIGURATION_NAME);
+    private void registerSystemTestExecutorConfiguration(final Project project) {
+        final Configuration cfg = project.getConfigurations().create(EXECUTOR_CONFIGURATION_NAME);
         cfg.setVisible(false);
         cfg.setTransitive(true);
         cfg.setCanBeConsumed(false);
@@ -109,7 +113,34 @@ public final class SystemTestPlugin implements Plugin<Project> {
 
         project.getTasks()
                 .withType(SystemTest.class)
-                .configureEach(task -> task.getSystemTestDeps().from(cfg));
+                .configureEach(task -> task.getSystemTestExecutor().from(cfg));
+    }
+
+    private void registerSystemTestExtensionConfiguration(final Project project) {
+        final Configuration cfg = project.getConfigurations().create(EXTENSION_CONFIGURATION_NAME);
+        cfg.setVisible(false);
+        cfg.setTransitive(true);
+        cfg.setCanBeConsumed(false);
+        cfg.setCanBeResolved(true);
+        cfg.setDescription("Creek system test extensions");
+
+        project.getTasks()
+                .withType(SystemTest.class)
+                .configureEach(task -> task.getSystemTestExtensions().from(cfg));
+    }
+
+    private void registerSystemTestComponentConfiguration(final Project project) {
+        final Configuration cfg = project.getConfigurations().create(COMPONENT_CONFIGURATION_NAME);
+        cfg.setVisible(false);
+        cfg.setTransitive(true);
+        cfg.setCanBeConsumed(false);
+        cfg.setCanBeResolved(true);
+        cfg.setDescription(
+                "Creek components: the services under test and any aggregates they interact with");
+
+        project.getTasks()
+                .withType(SystemTest.class)
+                .configureEach(task -> task.getSystemTestComponents().from(cfg));
     }
 
     private <T extends ExtensionAware> ExtensionAware ensureCreekExtension(final Project project) {
