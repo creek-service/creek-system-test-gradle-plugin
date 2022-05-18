@@ -32,12 +32,12 @@ plugins {
 
 The System Test plugin adds the following tasks to your project:
 
-### systemTest - [`SystemTest`][4]
+### systemTest - [SystemTest][4]
 
 > ### NOTE
 > Details of how to write system tests can be found in the [Creek System Test Repo][1].
 
-*Dependencies:* none, yet: WIP // Todo: should depend on jar?
+*Dependencies:* none. Users of this task should make the task dependent on the tasks the build the docker images under test.
 *Dependants:* `check`
 
 The `systemTest` task executes any system tests found in the project. 
@@ -97,7 +97,6 @@ creek {
 }
 ```
 
-
 ## Dependency Management
 
 The System Test plugin adds a number of [dependency configurations][2] to your project.  Tasks such as `systemTest`
@@ -105,6 +104,8 @@ then use these configurations to get the corresponding files and use them, for e
 when executing tests.
 
 * `systemTestExecutor` the [system test executor][3] dependency, defaulting to the same version as the plugin.
+* `systemTestExtension` system test extensions to allow the test to handle different types of resources.
+* `systemTestComponent` additional dependencies containing the Aggregate and Service components involved in the tests. 
 
 ### Changing the system test executor version
 

@@ -47,9 +47,11 @@ public abstract class SystemTest extends DefaultTask {
 
     public SystemTest() {
         this.classPath = getProject().getObjects().fileCollection();
-        classPath.from((Callable<Object>) this::getSystemTestDeps);
+        this.classPath.from((Callable<Object>) this::getSystemTestExecutor);
+        this.classPath.from((Callable<Object>) this::getSystemTestExtensions);
+        this.classPath.from((Callable<Object>) this::getSystemTestComponents);
 
-        setDescription("Runs system tests");
+        setDescription("Task for running Creek system tests");
     }
 
     /** @return the source directory containing test */
@@ -61,9 +63,17 @@ public abstract class SystemTest extends DefaultTask {
     @OutputDirectory
     public abstract DirectoryProperty getResultDirectory();
 
-    /** @return dependencies of the system test runner. */
+    /** @return dependencies of the system test executor. */
     @Internal
-    public abstract ConfigurableFileCollection getSystemTestDeps();
+    public abstract ConfigurableFileCollection getSystemTestExecutor();
+
+    /** @return dependencies of the system test extensions. */
+    @Internal
+    public abstract ConfigurableFileCollection getSystemTestExtensions();
+
+    /** @return dependencies of the components being system tested. */
+    @Internal
+    public abstract ConfigurableFileCollection getSystemTestComponents();
 
     @Option(
             option = "verification-timeout-seconds",
@@ -88,6 +98,7 @@ public abstract class SystemTest extends DefaultTask {
     public abstract ListProperty<String> getExtraArguments();
 
     /** Method to allow setting extra arguments from the command line. */
+    @SuppressWarnings("unused") // Invoked via reflection
     @Option(
             option = "extra-argument",
             description = "Any additional arguments to use when running system tests.")
@@ -107,12 +118,15 @@ public abstract class SystemTest extends DefaultTask {
                                             "org.creekservice.api.system.test.executor.SystemTestExecutor");
                             spec.setClasspath(classPath);
                             spec.setArgs(arguments());
+                            spec.jvmArgs(jvmArgs());
                         });
     }
 
     private void checkDependenciesIncludesRunner() {
         final Configuration configuration =
-                getProject().getConfigurations().getByName(SystemTestPlugin.CONFIGURATION_NAME);
+                getProject()
+                        .getConfigurations()
+                        .getByName(SystemTestPlugin.EXECUTOR_CONFIGURATION_NAME);
         configuration.resolve();
 
         final Optional<Dependency> executorDep =
@@ -145,12 +159,21 @@ public abstract class SystemTest extends DefaultTask {
         return arguments;
     }
 
+    private List<String> jvmArgs() {
+        final Object jvmArgs = getProject().findProperty("org.gradle.jvmargs");
+        if ((!(jvmArgs instanceof String))) {
+            return List.of();
+        }
+
+        return List.of(((String) jvmArgs).split("\\s+"));
+    }
+
     private static final class MissingExecutorDependencyException extends GradleException {
 
         MissingExecutorDependencyException() {
             super(
                     "No system test executor dependency found in "
-                            + SystemTestPlugin.CONFIGURATION_NAME
+                            + SystemTestPlugin.EXECUTOR_CONFIGURATION_NAME
                             + " configuration. Please ensure the configuration contains "
                             + EXECUTOR_DEP_GROUP_NAME
                             + ":"

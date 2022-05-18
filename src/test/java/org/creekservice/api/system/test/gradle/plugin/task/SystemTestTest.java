@@ -18,12 +18,15 @@ package org.creekservice.api.system.test.gradle.plugin.task;
 
 import static org.creekservice.api.system.test.gradle.plugin.ExecutorVersion.defaultExecutorVersion;
 import static org.creekservice.api.test.util.coverage.CodeCoverage.codeCoverageCmdLineArg;
+import static org.creekservice.api.test.util.debug.RemoteDebug.remoteDebugArguments;
 import static org.gradle.testkit.runner.TaskOutcome.FAILED;
 import static org.gradle.testkit.runner.TaskOutcome.NO_SOURCE;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 
 import java.nio.file.Files;
@@ -31,10 +34,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Pattern;
 import org.creekservice.api.test.util.TestPaths;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junitpioneer.jupiter.cartesian.ArgumentSets;
 import org.junitpioneer.jupiter.cartesian.CartesianTest;
@@ -42,6 +47,9 @@ import org.junitpioneer.jupiter.cartesian.CartesianTest.MethodFactory;
 
 @SuppressWarnings("ConstantConditions")
 class SystemTestTest {
+
+    // Change this to true locally to debug using attach-me plugin:
+    private static final boolean DEBUG = false;
 
     private static final Path PROJECT_DIR = TestPaths.projectRoot("src");
     private static final Path BUILD_DIR = PROJECT_DIR.resolve("build").toAbsolutePath();
@@ -111,6 +119,43 @@ class SystemTestTest {
         assertThat(
                 result.getOutput(),
                 containsString("SystemTestExecutor: " + defaultExecutorVersion()));
+
+        assertThat(
+                "class-path should not include Guava as this is used as a dummy extension and component by other tests",
+                result.getOutput(),
+                not(matchesPattern(Pattern.compile(".*--class-path=.*guava.*", Pattern.DOTALL))));
+    }
+
+    @CartesianTest
+    @MethodFactory("flavoursAndVersions")
+    void shouldExecuteWithExplicitComponents(final String flavour, final String gradleVersion) {
+        // Given:
+        givenProject(flavour + "/explicit-component");
+
+        // When:
+        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
+
+        // Then:
+        assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
+        assertThat(
+                result.getOutput(),
+                matchesPattern(Pattern.compile(".*--class-path=.*guava.*", Pattern.DOTALL)));
+    }
+
+    @CartesianTest
+    @MethodFactory("flavoursAndVersions")
+    void shouldExecuteWithExplicitExtension(final String flavour, final String gradleVersion) {
+        // Given:
+        givenProject(flavour + "/explicit-component");
+
+        // When:
+        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
+
+        // Then:
+        assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
+        assertThat(
+                result.getOutput(),
+                matchesPattern(Pattern.compile(".*--class-path=.*guava.*", Pattern.DOTALL)));
     }
 
     @CartesianTest
@@ -246,6 +291,11 @@ class SystemTestTest {
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
     }
 
+    @Test
+    void shouldNotCheckInWithDebuggingEnabled() {
+        assertThat("Do not check in with debugging enabled", !DEBUG);
+    }
+
     private void givenProject(final String projectPath) {
         TestPaths.copy(TEST_DIR.resolve(projectPath), projectDir);
     }
@@ -297,6 +347,10 @@ class SystemTestTest {
     private void writeGradleProperties() {
         final List<String> options = new ArrayList<>(3);
         codeCoverageCmdLineArg(BUILD_DIR).ifPresent(options::add);
+
+        if (DEBUG) {
+            options.addAll(remoteDebugArguments());
+        }
 
         if (!options.isEmpty()) {
             TestPaths.write(
