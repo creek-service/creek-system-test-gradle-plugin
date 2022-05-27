@@ -16,6 +16,7 @@
 
 package org.creekservice.api.system.test.gradle.plugin.task;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.creekservice.api.system.test.gradle.plugin.ExecutorVersion.defaultExecutorVersion;
 import static org.creekservice.api.test.util.coverage.CodeCoverage.codeCoverageCmdLineArg;
 import static org.creekservice.api.test.util.debug.RemoteDebug.remoteDebugArguments;
@@ -29,6 +30,7 @@ import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -55,6 +57,8 @@ class SystemTestTest {
     private static final Path BUILD_DIR = PROJECT_DIR.resolve("build").toAbsolutePath();
     private static final Path TEST_DIR =
             PROJECT_DIR.resolve("src/test/resources/projects/functional").toAbsolutePath();
+
+    private static final List<String> GRADLE_VERSIONS = loadGradleVersions();
 
     private static final String TASK_NAME = ":systemTest";
     private static final String INIT_SCRIPT = "--init-script=" + TEST_DIR.resolve("init.gradle");
@@ -362,8 +366,20 @@ class SystemTestTest {
     @SuppressWarnings("unused") // Invoked by reflection
     private static ArgumentSets flavoursAndVersions() {
         final Collection<?> flavours = List.of("kotlin", "groovy");
-        final Collection<?> gradleVersions = List.of("6.4", "6.9.2", "7.0", "7.3", "7.4.2");
         return ArgumentSets.argumentsForFirstParameter(flavours)
-                .argumentsForNextParameter(gradleVersions);
+                .argumentsForNextParameter(GRADLE_VERSIONS);
+    }
+
+    private static List<String> loadGradleVersions() {
+        try (InputStream s = SystemTestTest.class.getResourceAsStream("/gradle.test.versions")) {
+            if (s == null) {
+                throw new NullPointerException();
+            }
+
+            final String text = new String(s.readAllBytes(), UTF_8);
+            return List.of(text.split("\\s"));
+        } catch (Exception e) {
+            throw new AssertionError("Failed to load gradle test versions", e);
+        }
     }
 }

@@ -30,6 +30,11 @@ jobs:
           cache: gradle
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+      - name: Cache Gradle Distos
+        uses: actions/cache@v3
+        with:
+          key: creek-gradle-plugin-dists-${{ runner.os }}-${{ hashFiles('**/gradle.test.versions') }}
+          path: ~/.gradle/wrapper/dists
       - name: Build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
