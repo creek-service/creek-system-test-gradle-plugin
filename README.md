@@ -17,14 +17,14 @@ To use the System Test plugin, include the following in your build script:
 ##### Groovy: Using the System Test plugin
 ```groovy
 plugins {
-    id 'org.creekservice.system.test'
+    id 'org.creekservice.system.test' version '0.2.0'
 }
 ```
 
 ##### Kotlin: Using the System Test plugin
 ```kotlin
 plugins {
-    id("org.creekservice.system.test")
+    id("org.creekservice.system.test") version "0.2.0"
 }
 ```
 
