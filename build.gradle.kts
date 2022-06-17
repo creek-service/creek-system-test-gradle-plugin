@@ -4,8 +4,8 @@ plugins {
     `maven-publish`
     `java-gradle-plugin`
     id("com.github.spotbugs") version "5.0.6"                   // https://plugins.gradle.org/plugin/com.github.spotbugs
-    id("com.diffplug.spotless") version "6.6.1"                 // https://plugins.gradle.org/plugin/com.diffplug.spotless
-    id("pl.allegro.tech.build.axion-release") version "1.13.7"  // https://plugins.gradle.org/plugin/pl.allegro.tech.build.axion-release
+    id("com.diffplug.spotless") version "6.7.0"                 // https://plugins.gradle.org/plugin/com.diffplug.spotless
+    id("pl.allegro.tech.build.axion-release") version "1.13.14"  // https://plugins.gradle.org/plugin/pl.allegro.tech.build.axion-release
     id("com.github.kt3k.coveralls") version "2.12.0"            // https://plugins.gradle.org/plugin/com.github.kt3k.coveralls
 }
 
@@ -49,7 +49,7 @@ extra.apply {
     set("guavaVersion", "31.1-jre")         // https://mvnrepository.com/artifact/com.google.guava/guava
     set("junitVersion", "5.8.2")            // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
     set("junitPioneerVersion", "1.7.1")     // https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer
-    set("mockitoVersion", "4.6.0")          // https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter
+    set("mockitoVersion", "4.6.1")          // https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter
     set("hamcrestVersion", "2.2")           // https://mvnrepository.com/artifact/org.hamcrest/hamcrest-core
 }
 
