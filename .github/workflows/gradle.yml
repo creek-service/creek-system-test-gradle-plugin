@@ -29,9 +29,7 @@ jobs:
           distribution: 'adopt'
           cache: gradle
       - name: Grant execute permission for gradlew
-        run: |
-          chmod +x gradlew
-          ./gradlew --version
+        run: chmod +x gradlew
       - name: Build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
