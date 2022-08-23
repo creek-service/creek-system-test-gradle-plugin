@@ -58,13 +58,13 @@ class SystemTestTest {
 
     private static final String TASK_NAME = ":systemTest";
     private static final String INIT_SCRIPT = "--init-script=" + TEST_DIR.resolve("init.gradle");
+    private static final List<String> GRADLE_VERSIONS = List.of("6.4", "6.9.2", "7.0", "7.4.2");
 
     @TempDir private Path projectDir;
 
     @BeforeEach
     void setUp() throws Exception {
         projectDir = projectDir.toRealPath();
-        // writeGradleProperties();
     }
 
     @CartesianTest
@@ -327,6 +327,8 @@ class SystemTestTest {
             final ExpectedOutcome expectedOutcome,
             final String gradleVersion,
             final String... additionalArgs) {
+        writeGradleProperties(gradleVersion);
+
         final List<String> args = new ArrayList<>(List.of(INIT_SCRIPT, "--stacktrace", taskName));
         args.addAll(List.of(additionalArgs));
 
@@ -344,9 +346,12 @@ class SystemTestTest {
         return result;
     }
 
-    private void writeGradleProperties() {
+    private void writeGradleProperties(final String gradleVersion) {
         final List<String> options = new ArrayList<>(3);
-        codeCoverageCmdLineArg(BUILD_DIR).ifPresent(options::add);
+
+        if (gradleVersion.equals(latestGradleVersion())) {
+            codeCoverageCmdLineArg(BUILD_DIR).ifPresent(options::add);
+        }
 
         if (DEBUG) {
             options.addAll(remoteDebugArguments());
@@ -359,11 +364,14 @@ class SystemTestTest {
         }
     }
 
+    private static String latestGradleVersion() {
+        return GRADLE_VERSIONS.get(GRADLE_VERSIONS.size() - 1);
+    }
+
     @SuppressWarnings("unused") // Invoked by reflection
     private static ArgumentSets flavoursAndVersions() {
         final Collection<?> flavours = List.of("kotlin", "groovy");
-        final Collection<?> gradleVersions = List.of("6.4", "6.9.2", "7.0", "7.4.2");
         return ArgumentSets.argumentsForFirstParameter(flavours)
-                .argumentsForNextParameter(gradleVersions);
+                .argumentsForNextParameter(GRADLE_VERSIONS);
     }
 }
