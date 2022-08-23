@@ -64,7 +64,7 @@ class SystemTestTest {
     @BeforeEach
     void setUp() throws Exception {
         projectDir = projectDir.toRealPath();
-        //writeGradleProperties();
+        // writeGradleProperties();
     }
 
     @CartesianTest
