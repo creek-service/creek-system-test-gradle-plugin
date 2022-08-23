@@ -74,7 +74,6 @@ dependencies {
     testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
     testImplementation("org.hamcrest:hamcrest-core:$hamcrestVersion")
     testImplementation("com.google.guava:guava-testlib:$guavaVersion")
-    testImplementation("org.apache.logging.log4j:log4j-api:$log4jVersion")
     testImplementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
     testRuntimeOnly("org.apache.logging.log4j:log4j-slf4j18-impl:$log4jVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
@@ -197,6 +196,7 @@ publishing {
 
 tasks.register("coverage") {
     group = "coverage"
+    description = "Calculate coverage statistics"
     dependsOn("jacocoTestReport")
 }
 
