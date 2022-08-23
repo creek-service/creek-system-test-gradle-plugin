@@ -350,6 +350,7 @@ class SystemTestTest {
         final List<String> options = new ArrayList<>(3);
 
         if (gradleVersion.equals(latestGradleVersion())) {
+            // Minimise how many runs are added to code coverage to minimise chances of corrupting the coverage file:
             codeCoverageCmdLineArg(BUILD_DIR).ifPresent(options::add);
         }
 
