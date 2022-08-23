@@ -196,6 +196,7 @@ publishing {
 
 tasks.register("coverage") {
     group = "coverage"
+    description = "Calculate coverage statistics"
     dependsOn("jacocoTestReport")
 }
 

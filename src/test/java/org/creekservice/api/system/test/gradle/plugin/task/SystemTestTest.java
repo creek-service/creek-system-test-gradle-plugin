@@ -327,8 +327,7 @@ class SystemTestTest {
             final ExpectedOutcome expectedOutcome,
             final String gradleVersion,
             final String... additionalArgs) {
-        final List<String> args =
-                new ArrayList<>(List.of(INIT_SCRIPT, "--no-daemon", "--stacktrace", taskName));
+        final List<String> args = new ArrayList<>(List.of(INIT_SCRIPT, "--stacktrace", taskName));
         args.addAll(List.of(additionalArgs));
 
         final GradleRunner runner =
@@ -362,8 +361,8 @@ class SystemTestTest {
 
     @SuppressWarnings("unused") // Invoked by reflection
     private static ArgumentSets flavoursAndVersions() {
-        final Collection<?> flavours = List.of("kotlin", "groovy");
-        final Collection<?> gradleVersions = List.of("6.4", "6.9.2", "7.0", "7.4.2");
+        final Collection<?> flavours = List.of("kotlin"); //  , "groovy");
+        final Collection<?> gradleVersions = List.of("6.4"); //  , "6.9.2", "7.0", "7.4.2");
         return ArgumentSets.argumentsForFirstParameter(flavours)
                 .argumentsForNextParameter(gradleVersions);
     }
