@@ -22,6 +22,7 @@ import static org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin.EX
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin;
 import org.gradle.api.DefaultTask;
@@ -32,6 +33,7 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Internal;
@@ -106,6 +108,64 @@ public abstract class SystemTest extends DefaultTask {
         getExtraArguments().set(args);
     }
 
+    /**
+     * The port on which the attachMe plugin is listening on.
+     *
+     * <p>This is the port the attachMe agent running within the microservice's process will call
+     * out on to ask the debugger to attach.
+     *
+     * @return the port the attachMe plugin is listening on.
+     */
+    @Input
+    public abstract Property<Integer> getDebugAttachMePort();
+
+    /**
+     * The base debug port.
+     *
+     * <p>The port the first service being debugged will listen on for the debugger to attach.
+     * Subsequent services being debugged will use sequential port numbers.
+     *
+     * @return the base port number used for debugging.
+     */
+    @Input
+    public abstract Property<Integer> getDebugBaseServicePort();
+
+    /**
+     * The set of services to be debugged.
+     *
+     * @return set of services to debug.
+     */
+    @Input
+    public abstract SetProperty<String> getDebugServiceNames();
+
+    /** Method to allow setting debug service names the command line. */
+    @SuppressWarnings("unused") // Invoked via reflection
+    @Option(option = "debug-service", description = "The name(s) of service(s) to debug")
+    public void setDebugServices(final List<String> args) {
+        getDebugServiceNames().set(Set.copyOf(args));
+    }
+
+    /**
+     * The set of service instances to be debugged.
+     *
+     * <p>An instance name is the name of the service with a dash and the instance number appended,
+     * e.g. {@code my-service-1}.
+     *
+     * @return set of service instances to debug.
+     */
+    @Input
+    public abstract SetProperty<String> getDebugServiceInstanceNames();
+
+    /** Method to allow setting debug service instance names the command line. */
+    @SuppressWarnings("unused") // Invoked via reflection
+    @Option(
+            option = "debug-service-instance",
+            description =
+                    "The name(s) of service instances(s) to debug: <service-name>:<instance-num>")
+    public void setDebugServiceInstances(final List<String> args) {
+        getDebugServiceInstanceNames().set(Set.copyOf(args));
+    }
+
     @TaskAction
     public void run() {
         checkDependenciesIncludesRunner();
@@ -155,8 +215,25 @@ public abstract class SystemTest extends DefaultTask {
 
         arguments.add("--include-suites=" + getSuitesPathPattern().getOrNull());
 
+        arguments.addAll(debugArguments());
+
         arguments.addAll(getExtraArguments().get());
         return arguments;
+    }
+
+    private List<String> debugArguments() {
+        final Set<String> serviceNames = getDebugServiceNames().get();
+        final Set<String> instanceNames = getDebugServiceInstanceNames().get();
+
+        if (serviceNames.isEmpty() && instanceNames.isEmpty()) {
+            return List.of();
+        }
+
+        return List.of(
+                "--debug-attachme-port=" + getDebugAttachMePort().get(),
+                "--debug-service-port=" + getDebugBaseServicePort().get(),
+                "--debug-service=" + String.join(",", serviceNames),
+                "--debug-service-instance=" + String.join(",", instanceNames));
     }
 
     private List<String> jvmArgs() {

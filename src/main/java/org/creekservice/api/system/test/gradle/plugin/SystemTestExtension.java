@@ -19,12 +19,24 @@ package org.creekservice.api.system.test.gradle.plugin;
 
 import java.time.Duration;
 import java.util.List;
+import javax.inject.Inject;
+import org.gradle.api.Action;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 
 /** Extension for configuring Creek system tests. */
 public abstract class SystemTestExtension {
+
+    private final DebugExtension debugExt;
+
+    @Inject
+    public SystemTestExtension(final ObjectFactory objectFactory) {
+        this.debugExt = objectFactory.newInstance(DebugExtension.class);
+        debugExt.getAttachMePort().convention(7857);
+        debugExt.getBaseServicePort().convention(8000);
+    }
 
     /** @return the directory to search for test packages. */
     public abstract DirectoryProperty getTestDirectory();
@@ -70,5 +82,20 @@ public abstract class SystemTestExtension {
     @SuppressWarnings("unused") // Invoked from Gradle
     public void extraArguments(final String... args) {
         getExtraArguments().set(List.of(args));
+    }
+
+    /** @return the debugging extension * */
+    public DebugExtension getDebugging() {
+        return debugExt;
+    }
+
+    /**
+     * Configure debugging extension
+     *
+     * @param action the action to perform on the debugging ext.
+     */
+    @SuppressWarnings("unused") // Invoked from Gradle
+    public void debugging(final Action<DebugExtension> action) {
+        action.execute(debugExt);
     }
 }

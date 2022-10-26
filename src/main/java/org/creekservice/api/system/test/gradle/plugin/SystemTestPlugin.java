@@ -90,6 +90,11 @@ public final class SystemTestPlugin implements Plugin<Project> {
         task.getVerificationTimeoutSeconds().set(extension.getVerificationTimeoutSeconds());
         task.getSuitesPathPattern().set(extension.getSuitePathPattern());
 
+        task.getDebugAttachMePort().set(extension.getDebugging().getAttachMePort());
+        task.getDebugBaseServicePort().set(extension.getDebugging().getBaseServicePort());
+        task.getDebugServiceNames().set(extension.getDebugging().getServiceNames());
+        task.getDebugServiceInstanceNames().set(extension.getDebugging().getServiceInstanceNames());
+
         project.getTasksByName(LifecycleBasePlugin.CHECK_TASK_NAME, false)
                 .forEach(checkTask -> checkTask.dependsOn(task));
     }

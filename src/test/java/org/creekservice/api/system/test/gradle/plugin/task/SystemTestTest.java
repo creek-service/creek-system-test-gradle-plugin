@@ -146,7 +146,7 @@ class SystemTestTest {
     @MethodFactory("flavoursAndVersions")
     void shouldExecuteWithExplicitExtension(final String flavour, final String gradleVersion) {
         // Given:
-        givenProject(flavour + "/explicit-component");
+        givenProject(flavour + "/explicit-extension");
 
         // When:
         final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
@@ -245,6 +245,50 @@ class SystemTestTest {
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
         assertThat(result.getOutput(), containsString("--verifier-timeout-seconds=76"));
         assertThat(result.getOutput(), containsString("--include-suites=.*cli.*"));
+    }
+
+    @CartesianTest
+    @MethodFactory("flavoursAndVersions")
+    void shouldExecuteWithDebugServices(final String flavour, final String gradleVersion) {
+        // Given:
+        givenProject(flavour + "/debug");
+
+        // When:
+        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
+
+        // Then:
+        assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
+        assertThat(result.getOutput(), containsString("--debug-attachme-port=1234"));
+        assertThat(result.getOutput(), containsString("--debug-service-port=4321"));
+        assertThat(result.getOutput(), containsString("--debug-service=[service-a, service-b]"));
+        assertThat(
+                result.getOutput(),
+                containsString("--debug-service-instance=[instance-c, instance-d]"));
+    }
+
+    @CartesianTest
+    @MethodFactory("flavoursAndVersions")
+    void shouldExecuteWithDebugOptions(final String flavour, final String gradleVersion) {
+        // Given:
+        givenProject(flavour + "/empty");
+        givenTestSuite();
+
+        // When:
+        final BuildResult result =
+                executeTask(
+                        ExpectedOutcome.PASS,
+                        gradleVersion,
+                        "--extra-argument=--echo-only",
+                        "--debug-service=service-a,service-b",
+                        "--debug-service-instance=instance-c",
+                        "--debug-service-instance=instance-d");
+
+        // Then:
+        assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
+        assertThat(result.getOutput(), containsString("--debug-service=[service-a, service-b]"));
+        assertThat(
+                result.getOutput(),
+                containsString("--debug-service-instance=[instance-c, instance-d]"));
     }
 
     @CartesianTest
