@@ -31,6 +31,7 @@ public abstract class SystemTestExtension {
 
     private final DebugExtension debugExt;
 
+    /** @param objectFactory the @{link ObjectFactory} to use. */
     @Inject
     public SystemTestExtension(final ObjectFactory objectFactory) {
         this.debugExt = objectFactory.newInstance(DebugExtension.class);

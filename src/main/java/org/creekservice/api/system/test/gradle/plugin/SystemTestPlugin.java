@@ -34,19 +34,44 @@ import org.gradle.testing.base.plugins.TestingBasePlugin;
 /** Plugin for running Creek system tests. */
 public final class SystemTestPlugin implements Plugin<Project> {
 
+    /** Creek extension name */
     public static final String CREEK_EXTENSION_NAME = "creek";
+
+    /** System test extension name, i.e. `creek.systemTest` */
     public static final String TEST_EXTENSION_NAME = "systemTest";
+
+    /** Name of dependency configuration for storing the system test executor. */
     public static final String EXECUTOR_CONFIGURATION_NAME = "systemTestExecutor";
+
+    /** Name of dependency configuration for storing system test extensions. */
     public static final String EXTENSION_CONFIGURATION_NAME = "systemTestExtension";
+
+    /**
+     * Name of dependency configuration for storing dependencies containing aggregate and service
+     * descriptors.
+     */
     public static final String COMPONENT_CONFIGURATION_NAME = "systemTestComponent";
+
+    /** Name of the system test task */
     public static final String SYSTEM_TEST_TASK_NAME = "systemTest";
-    public static final String GROUP_NAME = "Creek";
+
+    /** Standard Creek group name. */
+    public static final String GROUP_NAME = "creek";
+
+    /** The default directory in which to load system tests packages from. */
     public static final String DEFAULT_TESTS_DIR_NAME = "src/system-test";
+    /** The default directory to which test results are written. */
     public static final String DEFAULT_RESULTS_DIR_NAME =
             TestingBasePlugin.TEST_RESULTS_DIR_NAME + "/system-test";
+    /** The default expectation timeout. */
     public static final Duration DEFAULT_EXPECTATION_TIMEOUT = Duration.ofMinutes(1);
+    /** The default suite include pattern: all suites. */
     public static final String DEFAULT_SUITES_PATTERN = ".*";
+
+    /** Artifact group for executor */
     public static final String EXECUTOR_DEP_GROUP_NAME = "org.creekservice";
+
+    /** Artifact name for executor */
     public static final String EXECUTOR_DEP_ARTEFACT_NAME = "creek-system-test-executor";
 
     @Override
@@ -158,6 +183,7 @@ public final class SystemTestPlugin implements Plugin<Project> {
         return extensions.create(SystemTestPlugin.CREEK_EXTENSION_NAME, CreekSpec.class);
     }
 
+    /** The `creek` extension namespace */
     public abstract static class CreekSpec implements ExtensionAware {
 
         @Override
