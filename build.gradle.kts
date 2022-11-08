@@ -47,6 +47,8 @@ gradlePlugin {
         register("CreekPlugin") {
             id = "org.creekservice.system.test"
             implementationClass = "org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin"
+            displayName = "Creek system test plugin"
+            description = "Executes blackbox testing of services running in Docker containers"
         }
     }
 }
