@@ -27,10 +27,11 @@ import java.io.InputStream;
  */
 public final class ExecutorVersion {
 
-    public static final String VERSION_RESOURCE_NAME = "/creek-system-test-executor.version";
+    private static final String VERSION_RESOURCE_NAME = "/creek-system-test-executor.version";
 
     private ExecutorVersion() {}
 
+    /** @return the default version of the test executor to use. */
     public static String defaultExecutorVersion() {
         return loadResource(VERSION_RESOURCE_NAME);
     }

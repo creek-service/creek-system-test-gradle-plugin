@@ -47,6 +47,7 @@ public abstract class SystemTest extends DefaultTask {
 
     private final ConfigurableFileCollection classPath;
 
+    /** Constructor. */
     public SystemTest() {
         this.classPath = getProject().getObjects().fileCollection();
         this.classPath.from((Callable<Object>) this::getSystemTestExecutor);
@@ -77,6 +78,7 @@ public abstract class SystemTest extends DefaultTask {
     @Internal
     public abstract ConfigurableFileCollection getSystemTestComponents();
 
+    /** @return verification timeout property. */
     @Option(
             option = "verification-timeout-seconds",
             description =
@@ -87,6 +89,7 @@ public abstract class SystemTest extends DefaultTask {
     @Input
     public abstract Property<String> getVerificationTimeoutSeconds();
 
+    /** @return suite path pattern property. */
     @Option(
             option = "include-suites",
             description =
@@ -99,7 +102,11 @@ public abstract class SystemTest extends DefaultTask {
     @Input
     public abstract ListProperty<String> getExtraArguments();
 
-    /** Method to allow setting extra arguments from the command line. */
+    /**
+     * Method to allow setting extra arguments from the command line.
+     *
+     * @param args the extra arguments.
+     */
     @SuppressWarnings("unused") // Invoked via reflection
     @Option(
             option = "extra-argument",
@@ -138,7 +145,11 @@ public abstract class SystemTest extends DefaultTask {
     @Input
     public abstract SetProperty<String> getDebugServiceNames();
 
-    /** Method to allow setting debug service names the command line. */
+    /**
+     * Method to allow setting debug service names the command line.
+     *
+     * @param args the service names
+     */
     @SuppressWarnings("unused") // Invoked via reflection
     @Option(option = "debug-service", description = "The name(s) of service(s) to debug")
     public void setDebugServices(final List<String> args) {
@@ -156,7 +167,11 @@ public abstract class SystemTest extends DefaultTask {
     @Input
     public abstract SetProperty<String> getDebugServiceInstanceNames();
 
-    /** Method to allow setting debug service instance names the command line. */
+    /**
+     * Method to allow setting debug service instance names the command line.
+     *
+     * @param args the instance names
+     */
     @SuppressWarnings("unused") // Invoked via reflection
     @Option(
             option = "debug-service-instance",
@@ -166,6 +181,7 @@ public abstract class SystemTest extends DefaultTask {
         getDebugServiceInstanceNames().set(Set.copyOf(args));
     }
 
+    /** Run the task. */
     @TaskAction
     public void run() {
         checkDependenciesIncludesRunner();

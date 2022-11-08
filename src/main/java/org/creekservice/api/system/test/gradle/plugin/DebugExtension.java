@@ -21,6 +21,7 @@ import java.util.Set;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.SetProperty;
 
+/** Extension for configuring information about debugging. */
 public abstract class DebugExtension {
 
     /**
