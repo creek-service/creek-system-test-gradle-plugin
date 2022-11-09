@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     inputs:
       publish_artifacts:
-        description: "Publish release artifacts: true or false?"
+        description: "Publish snapshot artifacts: true or false?"
         default: "true"
 
 jobs:
