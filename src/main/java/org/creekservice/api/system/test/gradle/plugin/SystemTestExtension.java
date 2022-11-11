@@ -31,7 +31,9 @@ public abstract class SystemTestExtension {
 
     private final DebugExtension debugExt;
 
-    /** @param objectFactory the @{link ObjectFactory} to use. */
+    /**
+     * @param objectFactory the @{link ObjectFactory} to use.
+     */
     @Inject
     public SystemTestExtension(final ObjectFactory objectFactory) {
         this.debugExt = objectFactory.newInstance(DebugExtension.class);
@@ -39,13 +41,19 @@ public abstract class SystemTestExtension {
         debugExt.getBaseServicePort().convention(8000);
     }
 
-    /** @return the directory to search for test packages. */
+    /**
+     * @return the directory to search for test packages.
+     */
     public abstract DirectoryProperty getTestDirectory();
 
-    /** @return the directory under which test result files will be written. */
+    /**
+     * @return the directory under which test result files will be written.
+     */
     public abstract DirectoryProperty getResultDirectory();
 
-    /** @return how long to wait for expectations to be met */
+    /**
+     * @return how long to wait for expectations to be met
+     */
     public abstract Property<String> getVerificationTimeoutSeconds();
 
     /**
@@ -85,7 +93,9 @@ public abstract class SystemTestExtension {
         getExtraArguments().set(List.of(args));
     }
 
-    /** @return the debugging extension * */
+    /**
+     * @return the debugging extension *
+     */
     public DebugExtension getDebugging() {
         return debugExt;
     }
