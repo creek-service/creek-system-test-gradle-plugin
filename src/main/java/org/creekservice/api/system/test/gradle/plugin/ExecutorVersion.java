@@ -31,7 +31,9 @@ public final class ExecutorVersion {
 
     private ExecutorVersion() {}
 
-    /** @return the default version of the test executor to use. */
+    /**
+     * @return the default version of the test executor to use.
+     */
     public static String defaultExecutorVersion() {
         return loadResource(VERSION_RESOURCE_NAME);
     }

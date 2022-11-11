@@ -57,28 +57,40 @@ public abstract class SystemTest extends DefaultTask {
         setDescription("Task for running Creek system tests");
     }
 
-    /** @return the source directory containing test */
+    /**
+     * @return the source directory containing test
+     */
     @SkipWhenEmpty
     @InputDirectory
     public abstract DirectoryProperty getTestDirectory();
 
-    /** @return the directory result files will be written to. */
+    /**
+     * @return the directory result files will be written to.
+     */
     @OutputDirectory
     public abstract DirectoryProperty getResultDirectory();
 
-    /** @return dependencies of the system test executor. */
+    /**
+     * @return dependencies of the system test executor.
+     */
     @Internal
     public abstract ConfigurableFileCollection getSystemTestExecutor();
 
-    /** @return dependencies of the system test extensions. */
+    /**
+     * @return dependencies of the system test extensions.
+     */
     @Internal
     public abstract ConfigurableFileCollection getSystemTestExtensions();
 
-    /** @return dependencies of the components being system tested. */
+    /**
+     * @return dependencies of the components being system tested.
+     */
     @Internal
     public abstract ConfigurableFileCollection getSystemTestComponents();
 
-    /** @return verification timeout property. */
+    /**
+     * @return verification timeout property.
+     */
     @Option(
             option = "verification-timeout-seconds",
             description =
@@ -89,7 +101,9 @@ public abstract class SystemTest extends DefaultTask {
     @Input
     public abstract Property<String> getVerificationTimeoutSeconds();
 
-    /** @return suite path pattern property. */
+    /**
+     * @return suite path pattern property.
+     */
     @Option(
             option = "include-suites",
             description =
@@ -98,7 +112,9 @@ public abstract class SystemTest extends DefaultTask {
     @Input
     public abstract Property<String> getSuitesPathPattern();
 
-    /** @return additional command line arguments to pass to the executor */
+    /**
+     * @return additional command line arguments to pass to the executor
+     */
     @Input
     public abstract ListProperty<String> getExtraArguments();
 
