@@ -302,9 +302,28 @@ The `systemTest` task generates XML JUnit style test results.
 By default, these are written to `$buildDir/test-results/system-test`. The output location can be changed by setting
 the `creek.systemTest.resultDirectory` property. 
 
+## Debugging system tests
+
+Creek supports debugging of the services running in their Docker containers.
+Service debugging requires the IntelliJ [AttachMe][attachMe] plugin to be installed.
+
+With the [AttachMe][attachMe] plugin installed, debugging a service is as simple as 1, 2, 3:
+
+1. Create and run an `AttachMe` run configuration on the default port of `7857`.
+2. Place the required breakpoints in the service's code.
+3. Run the system tests with additional `--debug-service` arguments. For example:
+   ```
+   ./gradlew systemTest --debug-service=some-service
+   ```
+
+When the named service is started, the debugger will attach.
+
+For more details on system test debugging, see the [creek-system-test][debug-system-test] docs.
+
 [1]: https://github.com/creek-service/creek-system-test
 [2]: https://docs.gradle.org/current/userguide/declaring_dependencies.html#sec:what-are-dependency-configurations
 [3]: https://github.com/creek-service/creek-system-test/tree/main/executor
 [4]: src/main/java/org/creekservice/api/system/test/gradle/plugin/task/SystemTest.java
 [kafka-test-ext]: https://github.com/creek-service/creek-kafka/tree/main/test-extension
 [debug-system-test]: https://github.com/creek-service/creek-system-test#debugging-system-tests
+[attachMe]: https://plugins.jetbrains.com/plugin/13263-attachme
