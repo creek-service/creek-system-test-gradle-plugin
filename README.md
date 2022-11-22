@@ -123,6 +123,33 @@ creek {
 }
 ```
 
+### Making system tests re-run on code changes
+
+To ensure system tests run after code changes to the services under test, the `systemTest` task must be configured
+to be dependent on the output of the task that creates each service's Docker image.
+
+For example, if the system tests are in their own module, and the project uses the `com.bmuschko.docker-remote-api` 
+plugin for building Docker images, then the following can be added to their Gradle build file
+to have them depend on the Docker images of each service.  If the Docker image is rebuilt, the system tests not
+be marked as 'up-to-date' by Gradle.
+
+```kotlin
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
+plugins {
+    id("com.bmuschko.docker-remote-api") version "8.1.0"
+}
+
+tasks.systemTest {
+    // Make the systemTest task be dependent on the output of all Docker image build tasks:
+    rootProject.allprojects.flatMap {
+       it.tasks.withType(DockerBuildImage::class)
+    }.forEach {
+        inputs.files(it).withPropertyName("${it.name}-output)")
+    }
+}
+```
+
 ## Dependency Management
 
 The System Test plugin adds a number of [dependency configurations][2] to your project.  Tasks such as `systemTest`
