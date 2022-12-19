@@ -2,6 +2,8 @@
 [![build](https://github.com/creek-service/creek-system-test-gradle-plugin/actions/workflows/build.yml/badge.svg)](https://github.com/creek-service/creek-system-test-gradle-plugin/actions/workflows/build.yml)
 [![Coverage Status](https://coveralls.io/repos/github/creek-service/creek-system-test-gradle-plugin/badge.svg?branch=main)](https://coveralls.io/github/creek-service/creek-system-test-gradle-plugin?branch=main)
 [![CodeQL](https://github.com/creek-service/creek-system-test-gradle-plugin/actions/workflows/codeql.yml/badge.svg)](https://github.com/creek-service/creek-system-test-gradle-plugin/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/creek-service/creek-system-test-gradle-plugin/badge)](https://api.securityscorecards.dev/projects/github.com/creek-service/creek-system-test-gradle-plugin)
+[![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/6842/badge)](https://bestpractices.coreinfrastructure.org/projects/6842)
 
 # Creek System Test Gradle Plugin
 
