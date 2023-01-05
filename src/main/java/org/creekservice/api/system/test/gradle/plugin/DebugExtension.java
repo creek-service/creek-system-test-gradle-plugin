@@ -24,6 +24,15 @@ import org.gradle.api.provider.SetProperty;
 /** Extension for configuring information about debugging. */
 public abstract class DebugExtension {
 
+    /** The default attachMe port that the IntelliJ attachMe plugin uses. */
+    public static final int DEFAULT_ATTACH_ME_PORT = 7857;
+
+    /**
+     * The start of the default range of ports on the local machine that services will listen on for
+     * the debugger.
+     */
+    public static final int DEFAULT_BASE_DEBUG_PORT = 8000;
+
     /**
      * The port on which the attachMe plugin is listening on.
      *

@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package org.creekservice.api.system.test.gradle.plugin.task;
+package org.creekservice.api.system.test.gradle.plugin.test;
 
 import static org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin.EXECUTOR_DEP_ARTEFACT_NAME;
 import static org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin.EXECUTOR_DEP_GROUP_NAME;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin;
+import org.creekservice.api.system.test.gradle.plugin.debug.PrepareDebug;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.artifacts.Configuration;
@@ -46,6 +48,7 @@ import org.gradle.api.tasks.options.Option;
 public abstract class SystemTest extends DefaultTask {
 
     private final ConfigurableFileCollection classPath;
+    private final PrepareDebug debugPrepareTask;
 
     /** Constructor. */
     public SystemTest() {
@@ -53,8 +56,11 @@ public abstract class SystemTest extends DefaultTask {
         this.classPath.from((Callable<Object>) this::getSystemTestExecutor);
         this.classPath.from((Callable<Object>) this::getSystemTestExtensions);
         this.classPath.from((Callable<Object>) this::getSystemTestComponents);
+        this.debugPrepareTask = prepareDebugTask();
 
         setDescription("Task for running Creek system tests");
+
+        dependsOn(debugPrepareTask);
     }
 
     /**
@@ -236,36 +242,78 @@ public abstract class SystemTest extends DefaultTask {
 
     private List<String> arguments() {
         final List<String> arguments = new ArrayList<>();
-        arguments.add(
-                "--test-directory="
-                        + getTestDirectory().getAsFile().get().toPath().toAbsolutePath());
-        arguments.add(
-                "--result-directory="
-                        + getResultDirectory().getAsFile().get().toPath().toAbsolutePath());
-
-        arguments.add("--verifier-timeout-seconds=" + getVerificationTimeoutSeconds().getOrNull());
-
-        arguments.add("--include-suites=" + getSuitesPathPattern().getOrNull());
-
+        arguments.addAll(commonArguments());
         arguments.addAll(debugArguments());
-
+        arguments.addAll(javaToolOptionsArgument());
         arguments.addAll(getExtraArguments().get());
         return arguments;
     }
 
-    private List<String> debugArguments() {
-        final Set<String> serviceNames = getDebugServiceNames().get();
-        final Set<String> instanceNames = getDebugServiceInstanceNames().get();
+    private List<String> commonArguments() {
+        return List.of(
+                "--test-directory="
+                        + getTestDirectory().getAsFile().get().toPath().toAbsolutePath(),
+                "--result-directory="
+                        + getResultDirectory().getAsFile().get().toPath().toAbsolutePath(),
+                "--verifier-timeout-seconds=" + getVerificationTimeoutSeconds().getOrNull(),
+                "--include-suites=" + getSuitesPathPattern().getOrNull());
+    }
 
-        if (serviceNames.isEmpty() && instanceNames.isEmpty()) {
+    private List<String> debugArguments() {
+        if (nothingToDebug()) {
             return List.of();
         }
 
         return List.of(
-                "--debug-attachme-port=" + getDebugAttachMePort().get(),
                 "--debug-service-port=" + getDebugBaseServicePort().get(),
-                "--debug-service=" + String.join(",", serviceNames),
-                "--debug-service-instance=" + String.join(",", instanceNames));
+                "--debug-service=" + String.join(",", getDebugServiceNames().get()),
+                "--debug-service-instance="
+                        + String.join(",", getDebugServiceInstanceNames().get()),
+                "--mount-read-only="
+                        + debugPrepareTask.getMountDirectory().get()
+                        + "=/opt/creek/mounts/debug");
+    }
+
+    private List<String> javaToolOptionsArgument() {
+        final List<String> options = new ArrayList<>(2);
+        options.add(debugJavaToolOptions());
+        options.removeIf(String::isEmpty);
+        if (options.isEmpty()) {
+            return List.of();
+        }
+
+        return List.of("--env=JAVA_TOOL_OPTIONS=\"" + String.join(" ", options) + "\"");
+    }
+
+    private String debugJavaToolOptions() {
+        if (nothingToDebug()) {
+            return "";
+        }
+
+        final Path agentJar =
+                debugPrepareTask
+                        .getAgentJarFileName()
+                        .orElseThrow(
+                                () ->
+                                        new IllegalStateException(
+                                                "No AttachMe agent jar found."
+                                                        + System.lineSeparator()
+                                                        + "Debugging services requires the AttachMe IntelliJ"
+                                                        + " plugin to have been installed and running."
+                                                        + System.lineSeparator()
+                                                        + "See: https://github.com/creek-service/"
+                                                        + "creek-system-test-gradle-plugin#debugging-system-tests"));
+
+        return "-javaagent:/opt/creek/mounts/debug/"
+                + agentJar
+                + "=host:host.docker.internal,port:"
+                + getDebugAttachMePort().get()
+                + " -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${SERVICE_DEBUG_PORT}";
+    }
+
+    private boolean nothingToDebug() {
+        return getDebugServiceNames().get().isEmpty()
+                && getDebugServiceInstanceNames().get().isEmpty();
     }
 
     private List<String> jvmArgs() {
@@ -275,6 +323,14 @@ public abstract class SystemTest extends DefaultTask {
         }
 
         return List.of(((String) jvmArgs).split("\\s+"));
+    }
+
+    private PrepareDebug prepareDebugTask() {
+        return (PrepareDebug)
+                getProject()
+                        .getTasksByName(SystemTestPlugin.PREPARE_DEBUG_TASK_NAME, false)
+                        .iterator()
+                        .next();
     }
 
     private static final class MissingExecutorDependencyException extends GradleException {

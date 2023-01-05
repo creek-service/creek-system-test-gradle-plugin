@@ -18,18 +18,6 @@ plugins {
     id 'org.creekservice.system.test'
 }
 
-creek.systemTest {
-    extraArguments "--echo-only"
-
-    debugging {
-        attachMePort = 1234
-        baseServicePort = 4321
-        serviceNames "service-a", "service-b"
-    }
-}
-
-creek.systemTest.debugging.serviceInstanceNames "instance-c", "instance-d"
-
 tasks.named("systemTestPrepareDebug") {
     attachMeDirectory = layout.projectDirectory.dir("attachMe")
 }

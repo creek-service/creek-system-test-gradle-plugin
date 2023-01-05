@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import org.creekservice.api.system.test.gradle.plugin.debug.PrepareDebug;
+
 plugins {
     id("org.creekservice.system.test")
 }
@@ -29,3 +31,7 @@ creek.systemTest {
 }
 
 creek.systemTest.debugging.serviceInstanceNames.set(setOf("instance-c", "instance-d"))
+
+tasks.named<PrepareDebug>("systemTestPrepareDebug") {
+    attachMeDirectory.set(layout.projectDirectory.dir("attachMe"))
+}
