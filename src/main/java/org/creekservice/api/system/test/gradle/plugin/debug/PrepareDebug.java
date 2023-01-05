@@ -18,7 +18,7 @@ package org.creekservice.api.system.test.gradle.plugin.debug;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin.GROUP_NAME;
-import static org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin.MOUNT_DIR;
+import static org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin.HOST_MOUNT_DIR;
 import static org.creekservice.api.system.test.gradle.plugin.debug.AttachMeAgentJarFinder.findAttacheMeAgentJar;
 
 import java.io.IOException;
@@ -59,7 +59,7 @@ public abstract class PrepareDebug extends DefaultTask {
                                                                 .resolve(".attachme")
                                                                 .toFile())));
         getMountDirectory()
-                .convention(project.getLayout().getBuildDirectory().dir(MOUNT_DIR + "/debug"));
+                .convention(project.getLayout().getBuildDirectory().dir(HOST_MOUNT_DIR + "debug"));
 
         onlyIf(t -> getAttachMeDirectory().get().getAsFile().exists());
     }
