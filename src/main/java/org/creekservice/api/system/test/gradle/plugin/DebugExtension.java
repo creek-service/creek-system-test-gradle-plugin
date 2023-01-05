@@ -16,7 +16,6 @@
 
 package org.creekservice.api.system.test.gradle.plugin;
 
-
 import java.util.Set;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.SetProperty;

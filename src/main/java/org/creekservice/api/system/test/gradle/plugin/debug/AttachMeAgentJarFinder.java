@@ -16,7 +16,6 @@
 
 package org.creekservice.api.system.test.gradle.plugin.debug;
 
-
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;

@@ -16,7 +16,6 @@
 
 package org.creekservice.api.system.test.gradle.plugin;
 
-
 import java.time.Duration;
 import java.util.List;
 import javax.inject.Inject;
