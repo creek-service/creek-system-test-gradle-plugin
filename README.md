@@ -352,7 +352,7 @@ For more details on system test debugging, see the [creek-system-test][debug-sys
 [1]: https://github.com/creek-service/creek-system-test
 [2]: https://docs.gradle.org/current/userguide/declaring_dependencies.html#sec:what-are-dependency-configurations
 [3]: https://github.com/creek-service/creek-system-test/tree/main/executor
-[4]: src/main/java/org/creekservice/api/system/test/gradle/plugin/task/SystemTest.java
+[4]: src/main/java/org/creekservice/api/system/test/gradle/plugin/test/SystemTest.java
 [kafka-test-ext]: https://github.com/creek-service/creek-kafka/tree/main/test-extension
 [debug-system-test]: https://github.com/creek-service/creek-system-test#debugging-system-tests
 [attachMe]: https://plugins.jetbrains.com/plugin/13263-attachme

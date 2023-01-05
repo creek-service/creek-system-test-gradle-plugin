@@ -37,8 +37,8 @@ public abstract class SystemTestExtension {
     @Inject
     public SystemTestExtension(final ObjectFactory objectFactory) {
         this.debugExt = objectFactory.newInstance(DebugExtension.class);
-        debugExt.getAttachMePort().convention(7857);
-        debugExt.getBaseServicePort().convention(8000);
+        debugExt.getAttachMePort().convention(DebugExtension.DEFAULT_ATTACH_ME_PORT);
+        debugExt.getBaseServicePort().convention(DebugExtension.DEFAULT_BASE_DEBUG_PORT);
     }
 
     /**

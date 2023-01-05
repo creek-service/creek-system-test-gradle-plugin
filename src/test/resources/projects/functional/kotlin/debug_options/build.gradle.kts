@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Creek Contributors (https://github.com/creek-service)
+ * Copyright 2022-2023 Creek Contributors (https://github.com/creek-service)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
+import org.creekservice.api.system.test.gradle.plugin.debug.PrepareDebug
+
 plugins {
-    id 'org.creekservice.system.test'
+    id("org.creekservice.system.test")
 }
 
-creek.systemTest {
-    extraArguments "--echo-only"
-
-    debugging {
-        attachMePort = 1234
-        baseServicePort = 4321
-        serviceNames "service-a", "service-b"
-    }
-}
-
-creek.systemTest.debugging.serviceInstanceNames "instance-c", "instance-d"
-
-tasks.named("systemTestPrepareDebug") {
-    attachMeDirectory = layout.projectDirectory.dir("attachMe")
+tasks.named<PrepareDebug>("systemTestPrepareDebug") {
+    attachMeDirectory.set(layout.projectDirectory.dir("attachMe"))
 }

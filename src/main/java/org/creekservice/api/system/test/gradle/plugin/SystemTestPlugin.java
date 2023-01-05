@@ -20,7 +20,8 @@ import static org.creekservice.api.system.test.gradle.plugin.ExecutorVersion.def
 
 import java.time.Duration;
 import java.util.List;
-import org.creekservice.api.system.test.gradle.plugin.task.SystemTest;
+import org.creekservice.api.system.test.gradle.plugin.debug.PrepareDebug;
+import org.creekservice.api.system.test.gradle.plugin.test.SystemTest;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -55,16 +56,25 @@ public final class SystemTestPlugin implements Plugin<Project> {
     /** Name of the system test task */
     public static final String SYSTEM_TEST_TASK_NAME = "systemTest";
 
+    /** Name of the task to prepare service debugging */
+    public static final String PREPARE_DEBUG_TASK_NAME = "systemTestPrepareDebug";
+
     /** Standard Creek group name. */
     public static final String GROUP_NAME = "creek";
 
+    /** Location under buildDir where Creek builds mount directories */
+    public static final String MOUNT_DIR = "creek/mounts";
+
     /** The default directory in which to load system tests packages from. */
     public static final String DEFAULT_TESTS_DIR_NAME = "src/system-test";
+
     /** The default directory to which test results are written. */
     public static final String DEFAULT_RESULTS_DIR_NAME =
             TestingBasePlugin.TEST_RESULTS_DIR_NAME + "/system-test";
+
     /** The default expectation timeout. */
     public static final Duration DEFAULT_EXPECTATION_TIMEOUT = Duration.ofMinutes(1);
+
     /** The default suite include pattern: all suites. */
     public static final String DEFAULT_SUITES_PATTERN = ".*";
 
@@ -79,6 +89,7 @@ public final class SystemTestPlugin implements Plugin<Project> {
         project.getPluginManager().apply(BasePlugin.class);
 
         final SystemTestExtension extension = registerExtension(project);
+        registerPrepareDebugTask(project);
         registerSystemTestTask(project, extension);
         registerSystemTestExecutorConfiguration(project);
         registerSystemTestExtensionConfiguration(project);
@@ -122,6 +133,10 @@ public final class SystemTestPlugin implements Plugin<Project> {
 
         project.getTasksByName(LifecycleBasePlugin.CHECK_TASK_NAME, false)
                 .forEach(checkTask -> checkTask.dependsOn(task));
+    }
+
+    private void registerPrepareDebugTask(final Project project) {
+        project.getTasks().register(PREPARE_DEBUG_TASK_NAME, PrepareDebug.class, project);
     }
 
     private void registerSystemTestExecutorConfiguration(final Project project) {
@@ -173,7 +188,7 @@ public final class SystemTestPlugin implements Plugin<Project> {
                 .configureEach(task -> task.getSystemTestComponents().from(cfg));
     }
 
-    private <T extends ExtensionAware> ExtensionAware ensureCreekExtension(final Project project) {
+    private ExtensionAware ensureCreekExtension(final Project project) {
         final ExtensionContainer extensions = project.getExtensions();
         final Object maybeExt = extensions.findByName(SystemTestPlugin.CREEK_EXTENSION_NAME);
         if (maybeExt != null) {
