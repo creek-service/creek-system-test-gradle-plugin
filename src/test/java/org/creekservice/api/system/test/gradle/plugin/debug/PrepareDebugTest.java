@@ -16,6 +16,7 @@
 
 package org.creekservice.api.system.test.gradle.plugin.debug;
 
+import static org.creekservice.api.system.test.gradle.plugin.TaskTestBase.ExpectedOutcome.PASS;
 import static org.creekservice.api.test.util.TestPaths.delete;
 import static org.gradle.testkit.runner.TaskOutcome.SKIPPED;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
@@ -29,6 +30,7 @@ import org.creekservice.api.system.test.gradle.plugin.TaskTestBase;
 import org.creekservice.api.test.util.TestPaths;
 import org.gradle.testkit.runner.BuildResult;
 import org.junitpioneer.jupiter.cartesian.CartesianTest;
+import org.junitpioneer.jupiter.cartesian.CartesianTest.MethodFactory;
 
 @SuppressWarnings("ConstantConditions")
 class PrepareDebugTest extends TaskTestBase {
@@ -43,7 +45,7 @@ class PrepareDebugTest extends TaskTestBase {
     }
 
     @CartesianTest
-    @CartesianTest.MethodFactory("flavoursAndVersions")
+    @MethodFactory("flavoursAndVersions")
     void shouldSkipPrepareDebugIfNoNoAttachMeDirectory(
             final String flavour, final String gradleVersion) {
         // Given:
@@ -51,21 +53,21 @@ class PrepareDebugTest extends TaskTestBase {
         delete(projectPath("attachMe"));
 
         // When:
-        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
+        final BuildResult result = executeTask(PASS, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(SKIPPED));
     }
 
     @CartesianTest
-    @CartesianTest.MethodFactory("flavoursAndVersions")
+    @MethodFactory("flavoursAndVersions")
     void shouldHandleNoAttachMeAgentJar(final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/debug");
         delete(projectPath("attachMe/attachme-agent-1.2.3.jar"));
 
         // When:
-        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
+        final BuildResult result = executeTask(PASS, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
@@ -78,13 +80,13 @@ class PrepareDebugTest extends TaskTestBase {
     }
 
     @CartesianTest
-    @CartesianTest.MethodFactory("flavoursAndVersions")
+    @MethodFactory("flavoursAndVersions")
     void shouldPrepareDebug(final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/debug");
 
         // When:
-        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
+        final BuildResult result = executeTask(PASS, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
@@ -95,7 +97,7 @@ class PrepareDebugTest extends TaskTestBase {
     }
 
     @CartesianTest
-    @CartesianTest.MethodFactory("flavoursAndVersions")
+    @MethodFactory("flavoursAndVersions")
     void shouldHandleAgentAlreadyExisting(final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/debug");
@@ -103,7 +105,7 @@ class PrepareDebugTest extends TaskTestBase {
         TestPaths.write(agentJar, "existing");
 
         // When:
-        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
+        final BuildResult result = executeTask(PASS, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
@@ -112,13 +114,13 @@ class PrepareDebugTest extends TaskTestBase {
     }
 
     @CartesianTest
-    @CartesianTest.MethodFactory("flavoursAndVersions")
+    @MethodFactory("flavoursAndVersions")
     void shouldRunBeforeSystemTest(final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/debug");
 
         // When:
-        final BuildResult result = executeTask(":systemTest", ExpectedOutcome.PASS, gradleVersion);
+        final BuildResult result = executeTask(":systemTest", PASS, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));

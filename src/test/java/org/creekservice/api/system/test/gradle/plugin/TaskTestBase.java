@@ -43,7 +43,7 @@ public abstract class TaskTestBase {
 
     private static final String INIT_SCRIPT = "--init-script=" + TEST_DIR.resolve("init.gradle");
 
-    protected enum ExpectedOutcome {
+    public enum ExpectedOutcome {
         PASS,
         FAIL
     }

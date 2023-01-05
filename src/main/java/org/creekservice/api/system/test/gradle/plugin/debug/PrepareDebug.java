@@ -36,7 +36,6 @@ import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
-import org.gradle.api.tasks.TaskExecutionException;
 
 /** Task for setting up a mount directory storing the AttachMe debug agent. */
 public abstract class PrepareDebug extends DefaultTask {
@@ -105,8 +104,7 @@ public abstract class PrepareDebug extends DefaultTask {
         try {
             Files.createDirectories(mountDir);
         } catch (final IOException e) {
-            throw new TaskExecutionException(
-                    this, new RuntimeException("Failed to create mount directory: " + mountDir, e));
+            throw new RuntimeException("Failed to create mount directory: " + mountDir, e);
         }
     }
 
@@ -120,10 +118,8 @@ public abstract class PrepareDebug extends DefaultTask {
                                         mountDir.resolve(agentJar.getFileName()),
                                         REPLACE_EXISTING);
                             } catch (final IOException e) {
-                                throw new TaskExecutionException(
-                                        this,
-                                        new RuntimeException(
-                                                "Failed to copy agent jar: " + agentJar, e));
+                                throw new RuntimeException(
+                                        "Failed to copy agent jar: " + agentJar, e);
                             }
                         });
     }
