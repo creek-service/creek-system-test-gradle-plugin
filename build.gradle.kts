@@ -28,6 +28,7 @@ plugins {
 project.version = scmVersion.version
 
 val creekVersion = "0.2.1-SNAPSHOT"
+val spotBugsVersion = "4.7.3"         // https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-annotations
 val guavaVersion = "31.1-jre"         // https://mvnrepository.com/artifact/com.google.guava/guava
 val log4jVersion = "2.19.0"           // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
 val junitVersion = "5.9.1"            // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
@@ -36,6 +37,7 @@ val mockitoVersion = "4.11.0"          // https://mvnrepository.com/artifact/org
 val hamcrestVersion = "2.2"           // https://mvnrepository.com/artifact/org.hamcrest/hamcrest-core
 
 dependencies {
+    implementation("com.github.spotbugs:spotbugs-annotations:$spotBugsVersion")
     // Avoid non-test dependencies in plugins.
 
     testImplementation("org.creekservice:creek-test-hamcrest:$creekVersion")

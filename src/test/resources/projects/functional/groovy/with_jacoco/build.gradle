@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import org.creekservice.api.system.test.gradle.plugin.debug.PrepareDebug
-
 plugins {
-    id("org.creekservice.system.test")
+    id 'org.creekservice.system.test'
+    id 'jacoco'
 }
 
-tasks.named<PrepareDebug>("systemTestPrepareDebug") {
-    attachMeDirectory.set(layout.projectDirectory.dir("attachMe"))
+creek.systemTest {
+    extraArguments "--echo-only"
+}
+
+tasks.named("systemTestPrepareDebug") {
+    attachMeDirectory = layout.projectDirectory.dir("attachMe")
 }

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.creekservice.api.system.test.gradle.plugin.debug;
+package org.creekservice.api.system.test.gradle.plugin.coverage;
 
 import static org.creekservice.api.system.test.gradle.plugin.TaskTestBase.ExpectedOutcome.PASS;
-import static org.creekservice.api.test.util.TestPaths.delete;
 import static org.gradle.testkit.runner.TaskOutcome.SKIPPED;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.creekservice.api.system.test.gradle.plugin.TaskTestBase;
@@ -33,27 +33,25 @@ import org.junitpioneer.jupiter.cartesian.CartesianTest;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.MethodFactory;
 
 @SuppressWarnings("ConstantConditions")
-class PrepareDebugTest extends TaskTestBase {
+class PrepareCoverageTest extends TaskTestBase {
 
     // Change this to true locally to debug using attach-me plugin:
     private static final boolean DEBUG = false;
 
-    private static final String TASK_NAME = ":systemTestPrepareDebug";
+    private static final String TASK_NAME = ":systemTestPrepareCoverage";
 
-    PrepareDebugTest() {
+    PrepareCoverageTest() {
         super(DEBUG);
     }
 
     @CartesianTest
     @MethodFactory("flavoursAndVersions")
-    void shouldSkipPrepareDebugIfNoNoAttachMeDirectory(
-            final String flavour, final String gradleVersion) {
+    void shouldSkipPrepareCoverageIfNoJaCoCo(final String flavour, final String gradleVersion) {
         // Given:
-        givenProject(flavour + "/debug");
-        delete(projectPath("attachMe"));
+        givenProject(flavour + "/default");
 
         // When:
-        final BuildResult result = executeTask(PASS, gradleVersion);
+        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(SKIPPED));
@@ -61,47 +59,25 @@ class PrepareDebugTest extends TaskTestBase {
 
     @CartesianTest
     @MethodFactory("flavoursAndVersions")
-    void shouldHandleNoAttachMeAgentJar(final String flavour, final String gradleVersion) {
+    void shouldPrepareCoverage(final String flavour, final String gradleVersion) {
         // Given:
-        givenProject(flavour + "/debug");
-        delete(projectPath("attachMe/attachme-agent-1.2.3.jar"));
+        givenProject(flavour + "/with_jacoco");
+        final Path agentJar = projectPath("build/creek/mounts/jacoco/jacocoagent.jar");
 
         // When:
-        final BuildResult result = executeTask(PASS, gradleVersion);
+        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
-        assertThat(
-                "agent jar should not exist",
-                !Files.exists(projectPath("build/creek/mounts/debug/attachme-agent-1.2.3.jar")));
-        assertThat(
-                "mount dir should exist",
-                Files.isDirectory(projectPath("build/creek/mounts/debug")));
-    }
-
-    @CartesianTest
-    @MethodFactory("flavoursAndVersions")
-    void shouldPrepareDebug(final String flavour, final String gradleVersion) {
-        // Given:
-        givenProject(flavour + "/debug");
-
-        // When:
-        final BuildResult result = executeTask(PASS, gradleVersion);
-
-        // Then:
-        assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
-        assertThat(
-                "agent jar exists",
-                Files.isRegularFile(
-                        projectPath("build/creek/mounts/debug/attachme-agent-1.2.3.jar")));
+        assertThat("agent jar exists", Files.isRegularFile(agentJar));
     }
 
     @CartesianTest
     @MethodFactory("flavoursAndVersions")
     void shouldHandleAgentAlreadyExisting(final String flavour, final String gradleVersion) {
         // Given:
-        givenProject(flavour + "/debug");
-        final Path agentJar = projectPath("build/creek/mounts/debug/attachme-agent-1.2.3.jar");
+        givenProject(flavour + "/with_jacoco");
+        final Path agentJar = projectPath("build/creek/mounts/jacoco/jacocoagent.jar");
         TestPaths.write(agentJar, "existing");
 
         // When:
@@ -110,10 +86,11 @@ class PrepareDebugTest extends TaskTestBase {
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
         assertThat("agent jar exists", Files.isRegularFile(agentJar));
-        assertThat(TestPaths.readString(agentJar), is(not("existing")));
+        assertThat(
+                TestPaths.readBytes(agentJar).length,
+                is(not("existing".getBytes(StandardCharsets.UTF_8).length)));
     }
 
-    @SuppressWarnings("SameParameterValue")
     private BuildResult executeTask(
             final ExpectedOutcome expectedOutcome,
             final String gradleVersion,

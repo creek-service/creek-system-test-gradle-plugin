@@ -18,7 +18,7 @@ package org.creekservice.api.system.test.gradle.plugin.debug;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin.GROUP_NAME;
-import static org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin.MOUNT_DIR;
+import static org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin.HOST_MOUNT_DIR;
 import static org.creekservice.api.system.test.gradle.plugin.debug.AttachMeAgentJarFinder.findAttacheMeAgentJar;
 
 import java.io.IOException;
@@ -59,7 +59,7 @@ public abstract class PrepareDebug extends DefaultTask {
                                                                 .resolve(".attachme")
                                                                 .toFile())));
         getMountDirectory()
-                .convention(project.getLayout().getBuildDirectory().dir(MOUNT_DIR + "/debug"));
+                .convention(project.getLayout().getBuildDirectory().dir(HOST_MOUNT_DIR + "debug"));
 
         onlyIf(t -> getAttachMeDirectory().get().getAsFile().exists());
     }
@@ -91,36 +91,28 @@ public abstract class PrepareDebug extends DefaultTask {
         return Optional.of(dir.getAsFile().toPath().relativize(files.getSingleFile().toPath()));
     }
 
-    /** Run the task. */
+    /**
+     * Run the task.
+     *
+     * @throws IOException on failed file operations
+     */
     @TaskAction
-    public void run() {
+    public void run() throws IOException {
         final Path attachMeDir = getAttachMeDirectory().get().getAsFile().toPath().toAbsolutePath();
         final Path mountDir = getMountDirectory().get().getAsFile().toPath().toAbsolutePath();
         createMountDir(mountDir);
         copyAgentJar(mountDir, attachMeDir);
     }
 
-    private void createMountDir(final Path mountDir) {
-        try {
-            Files.createDirectories(mountDir);
-        } catch (final IOException e) {
-            throw new RuntimeException("Failed to create mount directory: " + mountDir, e);
-        }
+    private void createMountDir(final Path mountDir) throws IOException {
+        Files.createDirectories(mountDir);
     }
 
-    private void copyAgentJar(final Path mountDir, final Path attachMeDir) {
-        findAttacheMeAgentJar(attachMeDir)
-                .ifPresent(
-                        agentJar -> {
-                            try {
-                                Files.copy(
-                                        agentJar,
-                                        mountDir.resolve(agentJar.getFileName()),
-                                        REPLACE_EXISTING);
-                            } catch (final IOException e) {
-                                throw new RuntimeException(
-                                        "Failed to copy agent jar: " + agentJar, e);
-                            }
-                        });
+    private void copyAgentJar(final Path mountDir, final Path attachMeDir) throws IOException {
+        final Optional<Path> maybeAgent = findAttacheMeAgentJar(attachMeDir);
+        if (maybeAgent.isPresent()) {
+            final Path agentJar = maybeAgent.get();
+            Files.copy(agentJar, mountDir.resolve(agentJar.getFileName()), REPLACE_EXISTING);
+        }
     }
 }

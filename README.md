@@ -39,6 +39,7 @@ For example:
 ##### Groovy: Build service container images before running system tests
 ```groovy
 tasks.systemTest {
+    // Hand-coded dependency on tasks that build images:
     dependsOn ':example-service:buildAppImage'
 }
 ```
@@ -59,8 +60,9 @@ The System Test plugin adds the following tasks to your project:
 > ### NOTE
 > Details of how to write system tests can be found in the [Creek System Test Repo][1].
 
-*Dependencies:* none. Users of this task should make the task dependent on the tasks the build the docker images under test.
-*Dependants:* `check`
+* *Dependencies:* `systemTestPrepareDebug` & `systemTestPrepareCoverage`. 
+  N.B. Users of this task should make the task dependent on the tasks the build the docker images under test.
+* *Dependants:* `check`
 
 The `systemTest` task executes any system tests found in the project, by default under the `src/system-test` directory.
 
@@ -90,7 +92,25 @@ For example:
     --debug-service-instance=some-service-2
 ```
 
-### clean*TaskName* - `Delete`
+### systemTestPrepareDebug
+
+* *Dependencies:* none
+* *Dependants:* `systemTest`
+
+Runs before `systemTest` to prepare the [AttachMe][attachMe] agent so that it can be made available as a mount 
+to any containers that are to be debugged. 
+
+### systemTestPrepareCoverage
+
+* *Dependencies:* none
+* *Dependants:* `systemTest`
+
+Runs before `systemTest` to prepare the [Jacoco][jacoco] agent so that it can be made available as a mount
+to the containers of services-under-test.
+
+Note: this task will only run if the [Jacoco Gradle plugin][jacoco] has been applied. 
+
+### clean*TaskName*
 
 Deletes the files created by the specified task. For example, `cleanSystemTest` will delete the test results.
 
@@ -331,6 +351,79 @@ The `systemTest` task generates XML JUnit style test results.
 By default, these are written to `$buildDir/test-results/system-test`. The output location can be changed by setting
 the `creek.systemTest.resultDirectory` property. 
 
+## Test coverage
+
+If the [Jacoco Gradle plugin][jacoco] is applied, the `systemTest` task will generate code coverage data.
+The coverage data is written to `$buildDir/creek/coverage/systemTest.exec`.
+However, by default, this data will not be included in any coverage report.
+
+An aggregate coverage report for all unit and system tests in a multi-module project can be build with:
+
+##### Groovy: Aggregate `coverage` task
+```
+Please feel free to convert the below to Groovy and raise a PR to update these docs :)
+```
+
+##### Kotlin: Aggregate `coverage` task
+```kotlin
+val coverage = tasks.register<JacocoReport>("coverage") {
+    group = "creek"
+    description = "Generates an aggregate code coverage report"
+
+    val coverageReportTask = this
+
+    allprojects {
+        val proj = this
+        // Roll results of each test task into the main coverage task:
+        proj.tasks.matching { it.extensions.findByType<JacocoTaskExtension>() != null }.forEach {
+            coverageReportTask.sourceSets(proj.sourceSets.main.get())
+            coverageReportTask.executionData(it.extensions.findByType<JacocoTaskExtension>()!!.destinationFile)
+            coverageReportTask.dependsOn(it)
+        }
+
+        // Roll results of each system test task into the main coverage task:
+        proj.tasks.matching { it.extensions.findByType<SystemTestCoverageExtension>() != null }.forEach {
+            coverageReportTask.executionData(it.extensions.findByType<SystemTestCoverageExtension>()!!.destinationFile)
+            coverageReportTask.dependsOn(it)
+        }
+    }
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+}
+```
+
+**ProTip:** The [aggregate-template][aggregate-template] repository comes with this task preconfigured. 
+
+### Image requirements for code coverage
+
+For code coverage to be correctly generated it is important that the service process running inside the Docker container
+is the _primary_ process.  This will ensure that `SIGTERM` shutdown requests will be forwarded to the process, allowing
+Jacoco to write out coverage results on program exit. This can be achieved by using `exec` to replace the shell process 
+with your JVM process:
+
+```dockerfile
+# This will not work:
+CMD java -jar /your-service.jar
+
+# Use this instead:
+CMD exec java -jar /your-service.jar
+```
+
+The same applies if you're using ENTRYPOINT instead of CMD:
+
+```dockerfile
+# This will not work:
+ENTRYPOINT java -jar /your-service.jar
+
+# Use this instead:
+ENTRYPOINT exec java -jar /your-service.jar
+```
+
+**ProTip:** The [aggregate-template][aggregate-template] repository comes with this preconfigured.
+
 ## Debugging system tests
 
 Creek supports debugging of the services running in their Docker containers.
@@ -356,3 +449,5 @@ For more details on system test debugging, see the [creek-system-test][debug-sys
 [kafka-test-ext]: https://github.com/creek-service/creek-kafka/tree/main/test-extension
 [debug-system-test]: https://github.com/creek-service/creek-system-test#debugging-system-tests
 [attachMe]: https://plugins.jetbrains.com/plugin/13263-attachme
+[jacoco]: https://docs.gradle.org/current/userguide/jacoco_plugin.html
+[aggregate-template]: https://www.creekservice.org/aggregate-template/

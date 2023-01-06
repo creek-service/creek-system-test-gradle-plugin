@@ -20,6 +20,7 @@ import static org.creekservice.api.system.test.gradle.plugin.ExecutorVersion.def
 
 import java.time.Duration;
 import java.util.List;
+import org.creekservice.api.system.test.gradle.plugin.coverage.PrepareCoverage;
 import org.creekservice.api.system.test.gradle.plugin.debug.PrepareDebug;
 import org.creekservice.api.system.test.gradle.plugin.test.SystemTest;
 import org.gradle.api.Plugin;
@@ -59,11 +60,17 @@ public final class SystemTestPlugin implements Plugin<Project> {
     /** Name of the task to prepare service debugging */
     public static final String PREPARE_DEBUG_TASK_NAME = "systemTestPrepareDebug";
 
+    /** Name of the task to prepare code coverage */
+    public static final String PREPARE_COVERAGE_TASK_NAME = "systemTestPrepareCoverage";
+
     /** Standard Creek group name. */
     public static final String GROUP_NAME = "creek";
 
     /** Location under buildDir where Creek builds mount directories */
-    public static final String MOUNT_DIR = "creek/mounts";
+    public static final String HOST_MOUNT_DIR = "creek/mounts/";
+
+    /** Location in the running container where Creek mounts directories */
+    public static final String CONTAINER_MOUNT_DIR = "/opt/creek/mounts/";
 
     /** The default directory in which to load system tests packages from. */
     public static final String DEFAULT_TESTS_DIR_NAME = "src/system-test";
@@ -90,6 +97,7 @@ public final class SystemTestPlugin implements Plugin<Project> {
 
         final SystemTestExtension extension = registerExtension(project);
         registerPrepareDebugTask(project);
+        registerPrepareCoverageTask(project);
         registerSystemTestTask(project, extension);
         registerSystemTestExecutorConfiguration(project);
         registerSystemTestExtensionConfiguration(project);
@@ -137,6 +145,10 @@ public final class SystemTestPlugin implements Plugin<Project> {
 
     private void registerPrepareDebugTask(final Project project) {
         project.getTasks().register(PREPARE_DEBUG_TASK_NAME, PrepareDebug.class, project);
+    }
+
+    private void registerPrepareCoverageTask(final Project project) {
+        project.getTasks().register(PREPARE_COVERAGE_TASK_NAME, PrepareCoverage.class, project);
     }
 
     private void registerSystemTestExecutorConfiguration(final Project project) {
