@@ -16,7 +16,11 @@
 
 package org.creekservice.api.system.test.gradle.plugin.test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.creekservice.api.system.test.gradle.plugin.ExecutorVersion.defaultExecutorVersion;
+import static org.creekservice.api.system.test.gradle.plugin.TaskTestBase.ExpectedOutcome.FAIL;
+import static org.creekservice.api.system.test.gradle.plugin.TaskTestBase.ExpectedOutcome.PASS;
+import static org.creekservice.api.test.hamcrest.PathMatchers.doesNotExist;
 import static org.creekservice.api.test.util.TestPaths.delete;
 import static org.gradle.testkit.runner.TaskOutcome.FAILED;
 import static org.gradle.testkit.runner.TaskOutcome.NO_SOURCE;
@@ -26,6 +30,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -181,7 +186,7 @@ class SystemTestTest extends TaskTestBase {
         givenProject(flavour + "/missing_executor_dep");
 
         // When:
-        final BuildResult result = executeTask(ExpectedOutcome.FAIL, gradleVersion);
+        final BuildResult result = executeTask(FAIL, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(FAILED));
@@ -198,7 +203,7 @@ class SystemTestTest extends TaskTestBase {
         givenProject(flavour + "/invalid_config");
 
         // When:
-        final BuildResult result = executeTask(ExpectedOutcome.FAIL, gradleVersion);
+        final BuildResult result = executeTask(FAIL, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(FAILED));
@@ -237,9 +242,7 @@ class SystemTestTest extends TaskTestBase {
         final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
 
         // Then:
-        final Path hostPath = projectPath("build/creek/mounts/debug");
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
-        assertThat(result.task(":systemTestPrepareDebug").getOutcome(), is(SUCCESS));
         assertThat(result.getOutput(), containsString("--debug-service-port=4321"));
         assertThat(result.getOutput(), containsString("--debug-service=service-a,service-b"));
         assertThat(
@@ -247,7 +250,10 @@ class SystemTestTest extends TaskTestBase {
                 containsString("--debug-service-instance=instance-c,instance-d"));
         assertThat(
                 result.getOutput(),
-                containsString("--mount-read-only=" + hostPath + "=/opt/creek/mounts/debug"));
+                containsString(
+                        "--mount-read-only="
+                                + projectPath("build/creek/mounts/debug")
+                                + "=/opt/creek/mounts/debug"));
         assertThat(
                 result.getOutput(),
                 containsString(
@@ -273,16 +279,17 @@ class SystemTestTest extends TaskTestBase {
                         "--debug-service-instance=instance-d");
 
         // Then:
-        final Path hostPath = projectPath("build/creek/mounts/debug");
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
-        assertThat(result.task(":systemTestPrepareDebug").getOutcome(), is(SUCCESS));
         assertThat(result.getOutput(), containsString("--debug-service=service-a,service-b"));
         assertThat(
                 result.getOutput(),
                 containsString("--debug-service-instance=instance-c,instance-d"));
         assertThat(
                 result.getOutput(),
-                containsString("--mount-read-only=" + hostPath + "=/opt/creek/mounts/debug"));
+                containsString(
+                        "--mount-read-only="
+                                + projectPath("build/creek/mounts/debug")
+                                + "=/opt/creek/mounts/debug"));
         assertThat(
                 result.getOutput(),
                 containsString(
@@ -299,7 +306,7 @@ class SystemTestTest extends TaskTestBase {
         delete(projectPath("attachMe/attachme-agent-1.2.3.jar"));
 
         // When:
-        final BuildResult result = executeTask(ExpectedOutcome.FAIL, gradleVersion);
+        final BuildResult result = executeTask(FAIL, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(FAILED));
@@ -315,11 +322,24 @@ class SystemTestTest extends TaskTestBase {
         delete(projectPath("attachMe"));
 
         // When:
-        final BuildResult result = executeTask(ExpectedOutcome.FAIL, gradleVersion);
+        final BuildResult result = executeTask(FAIL, gradleVersion);
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(FAILED));
         assertThat(result.getOutput(), containsString("No AttachMe agent jar found."));
+    }
+
+    @CartesianTest
+    @MethodFactory("flavoursAndVersions")
+    void shouldPrepareDebugBeforeSystemTest(final String flavour, final String gradleVersion) {
+        // Given:
+        givenProject(flavour + "/debug");
+
+        // When:
+        final BuildResult result = executeTask(PASS, gradleVersion);
+
+        // Then:
+        assertThat(result.task(":systemTestPrepareDebug").getOutcome(), is(SUCCESS));
     }
 
     @CartesianTest
@@ -363,6 +383,127 @@ class SystemTestTest extends TaskTestBase {
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
+    }
+
+    @CartesianTest
+    @MethodFactory("flavoursAndVersions")
+    void shouldNotPrepareCoverageFirstIfJaCoCoNotInstalled(
+            final String flavour, final String gradleVersion) {
+        // Given:
+        givenProject(flavour + "/default");
+
+        // When:
+        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
+
+        // Then:
+        assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
+        assertThat(result.task(":systemTestPrepareCoverage"), is(nullValue()));
+    }
+
+    @CartesianTest
+    @MethodFactory("flavoursAndVersions")
+    void shouldPrepareCoverageFirstIfJaCoCoInstalled(
+            final String flavour, final String gradleVersion) {
+        // Given:
+        givenProject(flavour + "/with_jacoco");
+
+        // When:
+        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
+
+        // Then:
+        assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
+        assertThat(result.task(":systemTestPrepareCoverage").getOutcome(), is(SUCCESS));
+    }
+
+    @CartesianTest
+    @MethodFactory("flavoursAndVersions")
+    void shouldDeleteAnyExistingCoverageOutputBeforeRunningSystemTest(
+            final String flavour, final String gradleVersion) throws Exception {
+        // Given:
+        givenProject(flavour + "/with_jacoco");
+
+        final Path resultFile =
+                givenDirectory("build/creek/mounts/coverage").resolve("systemTest.exec");
+        Files.write(resultFile, "Some Data".getBytes(UTF_8));
+
+        // When:
+        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
+
+        // Then:
+        assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
+        assertThat(resultFile, doesNotExist());
+    }
+
+    @CartesianTest
+    @MethodFactory("flavoursAndVersions")
+    void shouldExecuteWithCoverage(final String flavour, final String gradleVersion) {
+        // Given:
+        givenProject(flavour + "/with_jacoco");
+
+        // When:
+        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
+
+        // Then:
+        assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
+        assertThat(
+                result.getOutput(),
+                containsString(
+                        "--mount-read-only="
+                                + projectPath("build/creek/mounts/jacoco")
+                                + "=/opt/creek/mounts/jacoco"));
+        assertThat(
+                result.getOutput(),
+                containsString(
+                        "--mount-writable="
+                                + projectPath("build/creek/mounts/coverage")
+                                + "=/opt/creek/mounts/coverage"));
+        assertThat(
+                result.getOutput(),
+                containsString(
+                        "--env=JAVA_TOOL_OPTIONS="
+                                + "-javaagent:/opt/creek/mounts/jacoco/jacocoagent.jar=destfile=/opt/creek/mounts/coverage/systemTest.exec"
+                                + ",append=true,inclnolocationclasses=false,dumponexit=true,output=file,jmx=false"));
+    }
+
+    @CartesianTest
+    @MethodFactory("flavoursAndVersions")
+    void shouldSupportDebuggingAndCoverage(final String flavour, final String gradleVersion) {
+        // Given:
+        givenProject(flavour + "/with_jacoco");
+
+        // When:
+        final BuildResult result =
+                executeTask(
+                        ExpectedOutcome.PASS,
+                        gradleVersion,
+                        "--extra-argument=--echo-only",
+                        "--debug-service=service-a");
+
+        // Then:
+        assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
+        assertThat(result.getOutput(), containsString("--debug-service=service-a"));
+        assertThat(
+                result.getOutput(),
+                containsString(
+                        "--mount-read-only="
+                                + projectPath("build/creek/mounts/debug")
+                                + "=/opt/creek/mounts/debug,"
+                                + projectPath("build/creek/mounts/jacoco")
+                                + "=/opt/creek/mounts/jacoco"));
+        assertThat(
+                result.getOutput(),
+                containsString(
+                        "--mount-writable="
+                                + projectPath("build/creek/mounts/coverage")
+                                + "=/opt/creek/mounts/coverage"));
+        assertThat(
+                result.getOutput(),
+                containsString(
+                        "--env=JAVA_TOOL_OPTIONS="
+                                + "-javaagent:/opt/creek/mounts/debug/attachme-agent-1.2.3.jar=host:host.docker.internal,port:7857"
+                                + " -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${SERVICE_DEBUG_PORT}"
+                                + " -javaagent:/opt/creek/mounts/jacoco/jacocoagent.jar=destfile=/opt/creek/mounts/coverage/systemTest.exec"
+                                + ",append=true,inclnolocationclasses=false,dumponexit=true,output=file,jmx=false"));
     }
 
     private void givenTestSuite() {

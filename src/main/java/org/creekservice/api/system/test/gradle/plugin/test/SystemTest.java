@@ -16,8 +16,10 @@
 
 package org.creekservice.api.system.test.gradle.plugin.test;
 
+import static org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin.CONTAINER_MOUNT_DIR;
 import static org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin.EXECUTOR_DEP_ARTEFACT_NAME;
 import static org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin.EXECUTOR_DEP_GROUP_NAME;
+import static org.creekservice.api.system.test.gradle.plugin.coverage.SystemTestCoverageExtension.COVERAGE_EXT_NAME;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -26,9 +28,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin;
+import org.creekservice.api.system.test.gradle.plugin.coverage.SystemTestCoverageExtension;
 import org.creekservice.api.system.test.gradle.plugin.debug.PrepareDebug;
+import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
+import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.file.ConfigurableFileCollection;
@@ -43,9 +48,16 @@ import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.options.Option;
+import org.gradle.testing.jacoco.plugins.JacocoPlugin;
 
 /** Task for running Creek system tests. */
 public abstract class SystemTest extends DefaultTask {
+
+    /**
+     * The path with in the container where a directory containing the AttachMe agent will be
+     * mounted
+     */
+    public static final String CONTAINER_DEBUG_MOUNT = CONTAINER_MOUNT_DIR + "debug/";
 
     private final ConfigurableFileCollection classPath;
     private final PrepareDebug debugPrepareTask;
@@ -56,11 +68,13 @@ public abstract class SystemTest extends DefaultTask {
         this.classPath.from((Callable<Object>) this::getSystemTestExecutor);
         this.classPath.from((Callable<Object>) this::getSystemTestExtensions);
         this.classPath.from((Callable<Object>) this::getSystemTestComponents);
-        this.debugPrepareTask = prepareDebugTask();
+        this.debugPrepareTask = prepareDebugTask(getProject());
 
         setDescription("Task for running Creek system tests");
 
         dependsOn(debugPrepareTask);
+
+        initialiseCoverage();
     }
 
     /**
@@ -206,6 +220,7 @@ public abstract class SystemTest extends DefaultTask {
     /** Run the task. */
     @TaskAction
     public void run() {
+        cleanUp();
         checkDependenciesIncludesRunner();
 
         getProject()
@@ -218,6 +233,34 @@ public abstract class SystemTest extends DefaultTask {
                             spec.setArgs(arguments());
                             spec.jvmArgs(jvmArgs());
                         });
+    }
+
+    private void initialiseCoverage() {
+        final Action<Object> initializer =
+                ignored -> {
+                    dependsOn(
+                            getProject()
+                                    .getTasksByName(
+                                            SystemTestPlugin.PREPARE_COVERAGE_TASK_NAME, false));
+
+                    getExtensions()
+                            .create(COVERAGE_EXT_NAME, SystemTestCoverageExtension.class, this);
+                };
+
+        // Initialize coverage if the Jacoco plugin is present, or added later:
+        getProject()
+                .getPlugins()
+                .matching(p -> p.getClass().equals(JacocoPlugin.class))
+                .all(initializer);
+    }
+
+    private void cleanUp() {
+        final SystemTestCoverageExtension ext =
+                getExtensions().findByType(SystemTestCoverageExtension.class);
+        if (ext != null) {
+            ext.cleanUp();
+            getLogger().info("Coverage data will be written to " + ext.getDestinationFile());
+        }
     }
 
     private void checkDependenciesIncludesRunner() {
@@ -244,6 +287,7 @@ public abstract class SystemTest extends DefaultTask {
         final List<String> arguments = new ArrayList<>();
         arguments.addAll(commonArguments());
         arguments.addAll(debugArguments());
+        arguments.addAll(coverageArguments());
         arguments.addAll(javaToolOptionsArgument());
         arguments.addAll(getExtraArguments().get());
         return arguments;
@@ -271,12 +315,24 @@ public abstract class SystemTest extends DefaultTask {
                         + String.join(",", getDebugServiceInstanceNames().get()),
                 "--mount-read-only="
                         + debugPrepareTask.getMountDirectory().get()
-                        + "=/opt/creek/mounts/debug");
+                        + "="
+                        + CONTAINER_DEBUG_MOUNT);
+    }
+
+    private List<String> coverageArguments() {
+        final SystemTestCoverageExtension ext =
+                getExtensions().findByType(SystemTestCoverageExtension.class);
+        if (ext == null) {
+            return List.of();
+        }
+
+        return ext.mountOptions();
     }
 
     private List<String> javaToolOptionsArgument() {
         final List<String> options = new ArrayList<>(2);
         options.add(debugJavaToolOptions());
+        options.add(coverageJavaToolOptions());
         options.removeIf(String::isEmpty);
         if (options.isEmpty()) {
             return List.of();
@@ -304,11 +360,22 @@ public abstract class SystemTest extends DefaultTask {
                                                         + "See: https://github.com/creek-service/"
                                                         + "creek-system-test-gradle-plugin#debugging-system-tests"));
 
-        return "-javaagent:/opt/creek/mounts/debug/"
+        return "-javaagent:"
+                + CONTAINER_DEBUG_MOUNT
                 + agentJar
                 + "=host:host.docker.internal,port:"
                 + getDebugAttachMePort().get()
                 + " -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${SERVICE_DEBUG_PORT}";
+    }
+
+    private String coverageJavaToolOptions() {
+        final SystemTestCoverageExtension ext =
+                getExtensions().findByType(SystemTestCoverageExtension.class);
+        if (ext == null) {
+            return "";
+        }
+
+        return ext.asJavaToolOptions();
     }
 
     private boolean nothingToDebug() {
@@ -325,10 +392,9 @@ public abstract class SystemTest extends DefaultTask {
         return List.of(((String) jvmArgs).split("\\s+"));
     }
 
-    private PrepareDebug prepareDebugTask() {
+    private static PrepareDebug prepareDebugTask(final Project project) {
         return (PrepareDebug)
-                getProject()
-                        .getTasksByName(SystemTestPlugin.PREPARE_DEBUG_TASK_NAME, false)
+                project.getTasksByName(SystemTestPlugin.PREPARE_DEBUG_TASK_NAME, false)
                         .iterator()
                         .next();
     }

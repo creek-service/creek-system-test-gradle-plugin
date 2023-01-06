@@ -35,3 +35,7 @@ creek.systemTest.debugging.serviceInstanceNames.set(setOf("instance-c", "instanc
 tasks.named<PrepareDebug>("systemTestPrepareDebug") {
     attachMeDirectory.set(layout.projectDirectory.dir("attachMe"))
 }
+
+tasks.named<PrepareDebug>("systemTestPrepareDebug") {
+    attachMeDirectory.set(layout.projectDirectory.dir("attachMe"))
+}

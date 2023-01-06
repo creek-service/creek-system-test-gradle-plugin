@@ -33,3 +33,7 @@ creek.systemTest.debugging.serviceInstanceNames "instance-c", "instance-d"
 tasks.named("systemTestPrepareDebug") {
     attachMeDirectory = layout.projectDirectory.dir("attachMe")
 }
+
+tasks.named("systemTestPrepareDebug") {
+    attachMeDirectory = layout.projectDirectory.dir("attachMe")
+}
