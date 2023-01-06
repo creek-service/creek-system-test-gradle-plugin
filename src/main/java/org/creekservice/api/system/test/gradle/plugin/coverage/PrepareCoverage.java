@@ -60,7 +60,11 @@ public abstract class PrepareCoverage extends DefaultTask {
     @OutputDirectory
     public abstract DirectoryProperty getMountDirectory();
 
-    /** Run the task. */
+    /** 
+     * Run the task. 
+     *
+     * @throws IOException on failed file operations
+     */
     @TaskAction
     public void run() throws IOException {
         final Path mountDir = getMountDirectory().get().getAsFile().toPath().toAbsolutePath();
