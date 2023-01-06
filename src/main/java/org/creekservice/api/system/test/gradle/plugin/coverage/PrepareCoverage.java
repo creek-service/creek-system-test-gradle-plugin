@@ -62,7 +62,7 @@ public abstract class PrepareCoverage extends DefaultTask {
 
     /** Run the task. */
     @TaskAction
-    public void run() {
+    public void run() throws IOException {
         final Path mountDir = getMountDirectory().get().getAsFile().toPath().toAbsolutePath();
         final Configuration jacocoAgentConf = jacocoAgentConfig();
         createMountDir(mountDir);
@@ -80,22 +80,14 @@ public abstract class PrepareCoverage extends DefaultTask {
         return Optional.of(dir.getAsFile().toPath().relativize(files.getSingleFile().toPath()));
     }
 
-    private void createMountDir(final Path mountDir) {
-        try {
-            Files.createDirectories(mountDir);
-        } catch (final IOException e) {
-            throw new RuntimeException("Failed to create mount directory: " + mountDir, e);
-        }
+    private void createMountDir(final Path mountDir) throws IOException {
+        Files.createDirectories(mountDir);
     }
 
-    private void copyAgentJar(final Path mountDir, final Configuration jacocoAgentConf) {
+    private void copyAgentJar(final Path mountDir, final Configuration jacocoAgentConf)
+            throws IOException {
         final Path agentJar = extractAgentJar(jacocoAgentConf);
-
-        try {
-            Files.copy(agentJar, mountDir.resolve(agentJar.getFileName()), REPLACE_EXISTING);
-        } catch (final IOException e) {
-            throw new RuntimeException("Failed to copy agent jar: " + agentJar, e);
-        }
+        Files.copy(agentJar, mountDir.resolve(agentJar.getFileName()), REPLACE_EXISTING);
     }
 
     private Path extractAgentJar(final Configuration jacocoAgentConf) {

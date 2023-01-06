@@ -93,34 +93,22 @@ public abstract class PrepareDebug extends DefaultTask {
 
     /** Run the task. */
     @TaskAction
-    public void run() {
+    public void run() throws IOException {
         final Path attachMeDir = getAttachMeDirectory().get().getAsFile().toPath().toAbsolutePath();
         final Path mountDir = getMountDirectory().get().getAsFile().toPath().toAbsolutePath();
         createMountDir(mountDir);
         copyAgentJar(mountDir, attachMeDir);
     }
 
-    private void createMountDir(final Path mountDir) {
-        try {
-            Files.createDirectories(mountDir);
-        } catch (final IOException e) {
-            throw new RuntimeException("Failed to create mount directory: " + mountDir, e);
-        }
+    private void createMountDir(final Path mountDir) throws IOException {
+        Files.createDirectories(mountDir);
     }
 
-    private void copyAgentJar(final Path mountDir, final Path attachMeDir) {
-        findAttacheMeAgentJar(attachMeDir)
-                .ifPresent(
-                        agentJar -> {
-                            try {
-                                Files.copy(
-                                        agentJar,
-                                        mountDir.resolve(agentJar.getFileName()),
-                                        REPLACE_EXISTING);
-                            } catch (final IOException e) {
-                                throw new RuntimeException(
-                                        "Failed to copy agent jar: " + agentJar, e);
-                            }
-                        });
+    private void copyAgentJar(final Path mountDir, final Path attachMeDir) throws IOException {
+        final Optional<Path> maybeAgent = findAttacheMeAgentJar(attachMeDir);
+        if (maybeAgent.isPresent()) {
+            final Path agentJar = maybeAgent.get();
+            Files.copy(agentJar, mountDir.resolve(agentJar.getFileName()), REPLACE_EXISTING);
+        }
     }
 }
