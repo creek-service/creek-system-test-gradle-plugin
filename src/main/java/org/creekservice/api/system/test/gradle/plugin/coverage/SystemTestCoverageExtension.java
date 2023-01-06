@@ -35,18 +35,25 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputDirectory;
 
 /**
- * Extension applied to system test tasks if the JaCoCo plugin is installed to all configuration of
- * coverage options.
+ * Extension applied to system test tasks if the JaCoCo plugin is installed.
+ *
+ * <p>Handles configuration of coverage options.
  */
 public class SystemTestCoverageExtension {
 
     /** Name of coverage task extension. */
     public static final String COVERAGE_EXT_NAME = "coverage";
 
-    /** Path within the container where the Jacoco agent will be mounted. */
+    /**
+     * The path within the container where a read-only directory containing the Jacoco agent will be
+     * mounted
+     */
     public static final String CONTAINER_AGENT_MOUNT = CONTAINER_MOUNT_DIR + "jacoco/";
 
-    /** The writable mount within the container where coverage results will be written. */
+    /**
+     * The path within the container where a writable directory will be mounted to receive the
+     * coverage results.
+     */
     public static final String CONTAINER_RESULT_MOUNT = CONTAINER_MOUNT_DIR + "coverage/";
 
     private final PrepareCoverage prepareTask;
