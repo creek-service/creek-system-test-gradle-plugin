@@ -91,7 +91,11 @@ public abstract class PrepareDebug extends DefaultTask {
         return Optional.of(dir.getAsFile().toPath().relativize(files.getSingleFile().toPath()));
     }
 
-    /** Run the task. */
+    /** 
+     * Run the task. 
+     *
+     * @throws IOException on failed file operations
+     */
     @TaskAction
     public void run() throws IOException {
         final Path attachMeDir = getAttachMeDirectory().get().getAsFile().toPath().toAbsolutePath();
