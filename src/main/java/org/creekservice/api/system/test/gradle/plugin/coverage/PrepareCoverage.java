@@ -34,7 +34,6 @@ import org.gradle.api.file.FileTree;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
-import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.testing.jacoco.plugins.JacocoPlugin;
 
 /** Task for setting up a mount directory storing the Jacoco agent. */
@@ -78,10 +77,6 @@ public abstract class PrepareCoverage extends DefaultTask {
     public Optional<Path> getAgentJarFileName() {
         final Directory dir = getMountDirectory().get();
         final FileTree files = dir.getAsFileTree();
-        if (files.isEmpty()) {
-            return Optional.empty();
-        }
-
         return Optional.of(dir.getAsFile().toPath().relativize(files.getSingleFile().toPath()));
     }
 
@@ -89,8 +84,7 @@ public abstract class PrepareCoverage extends DefaultTask {
         try {
             Files.createDirectories(mountDir);
         } catch (final IOException e) {
-            throw new TaskExecutionException(
-                    this, new RuntimeException("Failed to create mount directory: " + mountDir, e));
+            throw new RuntimeException("Failed to create mount directory: " + mountDir, e);
         }
     }
 
@@ -100,8 +94,7 @@ public abstract class PrepareCoverage extends DefaultTask {
         try {
             Files.copy(agentJar, mountDir.resolve(agentJar.getFileName()), REPLACE_EXISTING);
         } catch (final IOException e) {
-            throw new TaskExecutionException(
-                    this, new RuntimeException("Failed to copy agent jar: " + agentJar, e));
+            throw new RuntimeException("Failed to copy agent jar: " + agentJar, e);
         }
     }
 
