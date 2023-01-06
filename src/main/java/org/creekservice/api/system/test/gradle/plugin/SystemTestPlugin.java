@@ -69,7 +69,7 @@ public final class SystemTestPlugin implements Plugin<Project> {
     /** Location under buildDir where Creek builds mount directories */
     public static final String HOST_MOUNT_DIR = "creek/mounts/";
 
-    /** Location under buildDir where Creek builds mount directories */
+    /** Location in the running container where Creek mounts directories */
     public static final String CONTAINER_MOUNT_DIR = "/opt/creek/mounts/";
 
     /** The default directory in which to load system tests packages from. */
