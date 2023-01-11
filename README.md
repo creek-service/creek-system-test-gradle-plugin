@@ -1,9 +1,10 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![build](https://github.com/creek-service/creek-system-test-gradle-plugin/actions/workflows/build.yml/badge.svg)](https://github.com/creek-service/creek-system-test-gradle-plugin/actions/workflows/build.yml)
 [![Coverage Status](https://coveralls.io/repos/github/creek-service/creek-system-test-gradle-plugin/badge.svg?branch=main)](https://coveralls.io/github/creek-service/creek-system-test-gradle-plugin?branch=main)
+[![Maven Central](https://img.shields.io/maven-central/v/org.creekservice/creek-system-test-gradle-plugin.svg)](https://central.sonatype.dev/search?q=creek-system-test-gradle-plugin)
 [![CodeQL](https://github.com/creek-service/creek-system-test-gradle-plugin/actions/workflows/codeql.yml/badge.svg)](https://github.com/creek-service/creek-system-test-gradle-plugin/actions/workflows/codeql.yml)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/creek-service/creek-system-test-gradle-plugin/badge)](https://api.securityscorecards.dev/projects/github.com/creek-service/creek-system-test-gradle-plugin)
-[![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/6842/badge)](https://bestpractices.coreinfrastructure.org/projects/6842)
+[![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/6899/badge)](https://bestpractices.coreinfrastructure.org/projects/6899)
 
 # Creek System Test Gradle Plugin
 
