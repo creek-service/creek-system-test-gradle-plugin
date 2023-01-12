@@ -16,7 +16,7 @@
 
 plugins {
     // Add another creek plugin before hand to make sure system test plugin plays nicely with others:
-    id("org.creekservice.schema.json") version "0.2.0-SNAPSHOT"
+    id("org.creekservice.schema.json") version "0.3.0"
     id("org.creekservice.system.test")
 }
 
