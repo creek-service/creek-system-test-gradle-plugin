@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id 'org.creekservice.schema.json' version('0.1.3-SNAPSHOT')
+    id 'org.creekservice.schema.json' version('0.3.0')
     id 'org.creekservice.system.test'
 }
 

@@ -17,23 +17,13 @@ See [CreekService.org](https://www.creekservice.org) for info on Creek Service.
 
 ## Usage
 
-To use the System Test plugin, include the following in your build script:
+The plugin is available on the [Gradle Plugin Portal][pluginPortal].
+See the portal for instructions on how to add the plugin to your build.
 
-##### Groovy: Using the System Test plugin
-```groovy
-plugins {
-    id 'org.creekservice.system.test' version '0.2.0'
-}
-```
+## Test consistency
 
-##### Kotlin: Using the System Test plugin
-```kotlin
-plugins {
-    id("org.creekservice.system.test") version "0.2.0"
-}
-```
-
-Before running the system tests, any required container images should be built. 
+System tests run your services in Docker containers. 
+Therefore, before running the system tests, it is important that any service images are up to-to-date. 
 This is best achieved by making the `systemTest` task depend on the tasks that build the images.
 For example:
 
@@ -51,6 +41,9 @@ tasks.systemTest {
     dependsOn(":example-service:buildAppImage")
 }
 ```
+
+> ### NOTE
+> A more dynamic approach to dependency management is discussed [below](#making-system-tests-re-run-on-code-changes)
 
 ## Tasks
 
@@ -153,8 +146,7 @@ to be dependent on the output of the task that creates each service's Docker ima
 
 For example, if the system tests are in their own module, and the project uses the `com.bmuschko.docker-remote-api` 
 plugin for building Docker images, then the following can be added to their Gradle build file
-to have them depend on the Docker images of each service.  If the Docker image is rebuilt, the system tests not
-be marked as 'up-to-date' by Gradle.
+to have them depend on the Docker images of each service.  If the Docker image is rebuilt, the system tests will re-run.
 
 ```kotlin
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
@@ -190,7 +182,7 @@ For example, the following is an example configuration for a repository containi
 ```groovy
 dependencies {
     systemTestComponent project(':services')
-    systemTestExtension 'org.creekservice:creek-kafka-test-extension:0.2.0'
+    systemTestExtension "org.creekservice:creek-kafka-test-extension:$creekVersion"
 }
 ```
 
@@ -198,26 +190,28 @@ dependencies {
 ```kotlin
 dependencies {
     systemTestComponent(project(":services"))
-    systemTestExtension("org.creekservice:creek-kafka-test-extension:0.2.0")
+    systemTestExtension("org.creekservice:creek-kafka-test-extension:$creekVersion")
 }
 ```
 
 ### Changing the system test executor version
 
 By default, the plugin executes system tests using the [system test executor][3] of the same version. However,
-you can configure the executor version via the `systemTestExecutor` dependency configuration:
+you can configure the executor version via the `systemTestExecutor` dependency configuration.
+
+For example, the following will always use the latest version of the executor:
 
 ##### Groovy: Custom system test executor version
 ```groovy
 dependencies {
-    systemTestExecutor 'org.creekservice:creek-system-test-executor:0.2.0'
+    systemTestExecutor 'org.creekservice:creek-system-test-executor:+'
 }
 ```
 
 ##### Kotlin: Custom system test executor version
 ```kotlin
 dependencies {
-    systemTestExecutor("org.creekservice:creek-system-test-executor:0.2.0")
+    systemTestExecutor("org.creekservice:creek-system-test-executor:+")
 }
 ```
 
@@ -452,3 +446,4 @@ For more details on system test debugging, see the [creek-system-test][debug-sys
 [attachMe]: https://plugins.jetbrains.com/plugin/13263-attachme
 [jacoco]: https://docs.gradle.org/current/userguide/jacoco_plugin.html
 [aggregate-template]: https://www.creekservice.org/aggregate-template/
+[pluginPortal]: https://plugins.gradle.org/plugin/org.creekservice.system.test
