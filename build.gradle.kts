@@ -33,13 +33,13 @@ allprojects {
     }
 }
 
-val creekVersion = "0.3.1-SNAPSHOT"
+val creekVersion = "0.3.2-SNAPSHOT"
 val spotBugsVersion = "4.7.3"         // https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-annotations
 val guavaVersion = "31.1-jre"         // https://mvnrepository.com/artifact/com.google.guava/guava
 val log4jVersion = "2.19.0"           // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
 val junitVersion = "5.9.2"            // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
 val junitPioneerVersion = "1.9.1"     // https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer
-val mockitoVersion = "5.1.0"          // https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter
+val mockitoVersion = "5.1.1"          // https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter
 val hamcrestVersion = "2.2"           // https://mvnrepository.com/artifact/org.hamcrest/hamcrest-core
 
 dependencies {
