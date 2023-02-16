@@ -114,10 +114,10 @@ public abstract class SystemTest extends DefaultTask {
     @Option(
             option = "verification-timeout-seconds",
             description =
-                    "Set an optional custom verifier timeout. "
-                            + "The verifier timeout is the maximum amount of time the system tests "
-                            + "will wait for a defined expectation to be met. A longer timeout will mean "
-                            + "tests have more time for expectations to be met, but may run slower as a consequence.")
+                    "Set an optional custom verifier timeout. The verifier timeout is the maximum"
+                        + " amount of time the system tests will wait for a defined expectation to"
+                        + " be met. A longer timeout will mean tests have more time for"
+                        + " expectations to be met, but may run slower as a consequence.")
     @Input
     public abstract Property<String> getVerificationTimeoutSeconds();
 
@@ -127,8 +127,9 @@ public abstract class SystemTest extends DefaultTask {
     @Option(
             option = "include-suites",
             description =
-                    "Set an optional regular expression pattern to limit the test suites to run. "
-                            + "Only test suites whose relative path matches the supplied pattern will be included.")
+                    "Set an optional regular expression pattern to limit the test suites to run."
+                        + " Only test suites whose relative path matches the supplied pattern will"
+                        + " be included.")
     @Input
     public abstract Property<String> getSuitesPathPattern();
 
@@ -354,8 +355,9 @@ public abstract class SystemTest extends DefaultTask {
                                         new IllegalStateException(
                                                 "No AttachMe agent jar found."
                                                         + System.lineSeparator()
-                                                        + "Debugging services requires the AttachMe IntelliJ"
-                                                        + " plugin to have been installed and running."
+                                                        + "Debugging services requires the AttachMe"
+                                                        + " IntelliJ plugin to have been installed"
+                                                        + " and running."
                                                         + System.lineSeparator()
                                                         + "See: https://github.com/creek-service/"
                                                         + "creek-system-test-gradle-plugin#debugging-system-tests"));

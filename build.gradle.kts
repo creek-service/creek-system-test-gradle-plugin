@@ -27,6 +27,12 @@ plugins {
 
 project.version = scmVersion.version
 
+allprojects {
+    tasks.jar {
+        onlyIf { sourceSets.main.get().allSource.files.isNotEmpty() }
+    }
+}
+
 val creekVersion = "0.3.1-SNAPSHOT"
 val spotBugsVersion = "4.7.3"         // https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-annotations
 val guavaVersion = "31.1-jre"         // https://mvnrepository.com/artifact/com.google.guava/guava

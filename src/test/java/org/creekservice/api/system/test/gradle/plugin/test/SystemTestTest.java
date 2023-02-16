@@ -106,7 +106,8 @@ class SystemTestTest extends TaskTestBase {
                 containsString("SystemTestExecutor: " + defaultExecutorVersion()));
 
         assertThat(
-                "class-path should not include Guava as this is used as a dummy extension and component by other tests",
+                "class-path should not include Guava as this is used as a dummy extension and"
+                        + " component by other tests",
                 result.getOutput(),
                 not(matchesPattern(Pattern.compile(".*--class-path=.*guava.*", Pattern.DOTALL))));
     }
@@ -193,7 +194,8 @@ class SystemTestTest extends TaskTestBase {
         assertThat(
                 result.getOutput(),
                 containsString(
-                        "No system test executor dependency found in systemTestExecutor configuration."));
+                        "No system test executor dependency found in systemTestExecutor"
+                                + " configuration."));
     }
 
     @CartesianTest
@@ -258,8 +260,8 @@ class SystemTestTest extends TaskTestBase {
                 result.getOutput(),
                 containsString(
                         "--env=JAVA_TOOL_OPTIONS="
-                                + "-javaagent:/opt/creek/mounts/debug/attachme-agent-1.2.3.jar=host:host.docker.internal,port:1234"
-                                + " -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${SERVICE_DEBUG_PORT}"));
+                            + "-javaagent:/opt/creek/mounts/debug/attachme-agent-1.2.3.jar=host:host.docker.internal,port:1234"
+                            + " -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${SERVICE_DEBUG_PORT}"));
     }
 
     @CartesianTest
@@ -294,8 +296,8 @@ class SystemTestTest extends TaskTestBase {
                 result.getOutput(),
                 containsString(
                         "--env=JAVA_TOOL_OPTIONS="
-                                + "-javaagent:/opt/creek/mounts/debug/attachme-agent-1.2.3.jar=host:host.docker.internal,port:7857"
-                                + " -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${SERVICE_DEBUG_PORT}"));
+                            + "-javaagent:/opt/creek/mounts/debug/attachme-agent-1.2.3.jar=host:host.docker.internal,port:7857"
+                            + " -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${SERVICE_DEBUG_PORT}"));
     }
 
     @CartesianTest
@@ -461,8 +463,8 @@ class SystemTestTest extends TaskTestBase {
                 result.getOutput(),
                 containsString(
                         "--env=JAVA_TOOL_OPTIONS="
-                                + "-javaagent:/opt/creek/mounts/jacoco/jacocoagent.jar=destfile=/opt/creek/mounts/coverage/systemTest.exec"
-                                + ",append=true,inclnolocationclasses=false,dumponexit=true,output=file,jmx=false"));
+                            + "-javaagent:/opt/creek/mounts/jacoco/jacocoagent.jar=destfile=/opt/creek/mounts/coverage/systemTest.exec"
+                            + ",append=true,inclnolocationclasses=false,dumponexit=true,output=file,jmx=false"));
     }
 
     @CartesianTest
@@ -500,10 +502,10 @@ class SystemTestTest extends TaskTestBase {
                 result.getOutput(),
                 containsString(
                         "--env=JAVA_TOOL_OPTIONS="
-                                + "-javaagent:/opt/creek/mounts/debug/attachme-agent-1.2.3.jar=host:host.docker.internal,port:7857"
-                                + " -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${SERVICE_DEBUG_PORT}"
-                                + " -javaagent:/opt/creek/mounts/jacoco/jacocoagent.jar=destfile=/opt/creek/mounts/coverage/systemTest.exec"
-                                + ",append=true,inclnolocationclasses=false,dumponexit=true,output=file,jmx=false"));
+                            + "-javaagent:/opt/creek/mounts/debug/attachme-agent-1.2.3.jar=host:host.docker.internal,port:7857"
+                            + " -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${SERVICE_DEBUG_PORT}"
+                            + " -javaagent:/opt/creek/mounts/jacoco/jacocoagent.jar=destfile=/opt/creek/mounts/coverage/systemTest.exec"
+                            + ",append=true,inclnolocationclasses=false,dumponexit=true,output=file,jmx=false"));
     }
 
     private void givenTestSuite() {
