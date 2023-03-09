@@ -309,15 +309,25 @@ public abstract class SystemTest extends DefaultTask {
             return List.of();
         }
 
-        return List.of(
-                "--debug-service-port=" + getDebugBaseServicePort().get(),
-                "--debug-service=" + String.join(",", getDebugServiceNames().get()),
-                "--debug-service-instance="
-                        + String.join(",", getDebugServiceInstanceNames().get()),
+        final List<String> args = new ArrayList<>();
+        args.add("--debug-service-port=" + getDebugBaseServicePort().get());
+        args.add(
                 "--mount-read-only="
                         + debugPrepareTask.getMountDirectory().get()
                         + "="
                         + CONTAINER_DEBUG_MOUNT);
+
+        final String services = String.join(",", getDebugServiceNames().get());
+        if (!services.isBlank()) {
+            args.add("--debug-service=" + services);
+        }
+
+        final String instances = String.join(",", getDebugServiceInstanceNames().get());
+        if (!instances.isBlank()) {
+            args.add("--debug-service-instance=" + instances);
+        }
+
+        return args;
     }
 
     private List<String> coverageArguments() {
