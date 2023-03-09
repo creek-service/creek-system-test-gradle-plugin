@@ -232,6 +232,8 @@ class SystemTestTest extends TaskTestBase {
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
         assertThat(result.getOutput(), containsString("--verifier-timeout-seconds=76"));
         assertThat(result.getOutput(), containsString("--include-suites=.*cli.*"));
+        assertThat(result.getOutput(), containsString("--debug-service=<Not Set>"));
+        assertThat(result.getOutput(), containsString("--debug-service-instance=<Not Set>"));
     }
 
     @CartesianTest
@@ -298,6 +300,51 @@ class SystemTestTest extends TaskTestBase {
                         "--env=JAVA_TOOL_OPTIONS="
                             + "-javaagent:/opt/creek/mounts/debug/attachme-agent-1.2.3.jar=host:host.docker.internal,port:7857"
                             + " -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${SERVICE_DEBUG_PORT}"));
+    }
+
+    @CartesianTest
+    @MethodFactory("flavoursAndVersions")
+    void shouldExecuteWithDebugOptionsJustService(
+            final String flavour, final String gradleVersion) {
+        // Given:
+        givenProject(flavour + "/debug_options");
+
+        // When:
+        final BuildResult result =
+                executeTask(
+                        ExpectedOutcome.PASS,
+                        gradleVersion,
+                        "--extra-argument=--echo-only",
+                        "--debug-service=service-a,service-b");
+
+        // Then:
+        assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
+        assertThat(result.getOutput(), containsString("--debug-service=service-a,service-b"));
+        assertThat(result.getOutput(), containsString("--debug-service-instance=<Not Set>"));
+    }
+
+    @CartesianTest
+    @MethodFactory("flavoursAndVersions")
+    void shouldExecuteWithDebugOptionsJustInstance(
+            final String flavour, final String gradleVersion) {
+        // Given:
+        givenProject(flavour + "/debug_options");
+
+        // When:
+        final BuildResult result =
+                executeTask(
+                        ExpectedOutcome.PASS,
+                        gradleVersion,
+                        "--extra-argument=--echo-only",
+                        "--debug-service-instance=instance-c",
+                        "--debug-service-instance=instance-d");
+
+        // Then:
+        assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
+        assertThat(result.getOutput(), containsString("--debug-service=<Not Set>"));
+        assertThat(
+                result.getOutput(),
+                containsString("--debug-service-instance=instance-c,instance-d"));
     }
 
     @CartesianTest
