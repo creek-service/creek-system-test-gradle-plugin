@@ -48,6 +48,9 @@ class SystemTestTest extends TaskTestBase {
     private static final boolean DEBUG = false;
 
     private static final String TASK_NAME = ":systemTest";
+    public static final String JACOCO_COVERAGE_AGENT =
+            "-javaagent:/opt/creek/mounts/jacoco/jacocoagent.jar=destfile=/opt/creek/mounts/coverage/systemTest.exec"
+                + ",append=true,inclnolocationclasses=false,dumponexit=true,output=file,jmx=false";
 
     SystemTestTest() {
         super(DEBUG);
@@ -258,12 +261,10 @@ class SystemTestTest extends TaskTestBase {
                         "--mount-read-only="
                                 + projectPath("build/creek/mounts/debug")
                                 + "=/opt/creek/mounts/debug"));
+        assertThat(result.getOutput(), not(containsString("--env=JAVA_TOOL_OPTIONS=")));
         assertThat(
                 result.getOutput(),
-                containsString(
-                        "--env=JAVA_TOOL_OPTIONS="
-                            + "-javaagent:/opt/creek/mounts/debug/attachme-agent-1.2.3.jar=host:host.docker.internal,port:1234"
-                            + " -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${SERVICE_DEBUG_PORT}"));
+                containsString("--debug-env=JAVA_TOOL_OPTIONS=" + attachMeDebugAgent(1234)));
     }
 
     @CartesianTest
@@ -294,12 +295,10 @@ class SystemTestTest extends TaskTestBase {
                         "--mount-read-only="
                                 + projectPath("build/creek/mounts/debug")
                                 + "=/opt/creek/mounts/debug"));
+        assertThat(result.getOutput(), not(containsString("--env=JAVA_TOOL_OPTIONS=")));
         assertThat(
                 result.getOutput(),
-                containsString(
-                        "--env=JAVA_TOOL_OPTIONS="
-                            + "-javaagent:/opt/creek/mounts/debug/attachme-agent-1.2.3.jar=host:host.docker.internal,port:7857"
-                            + " -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${SERVICE_DEBUG_PORT}"));
+                containsString("--debug-env=JAVA_TOOL_OPTIONS=" + attachMeDebugAgent(7857)));
     }
 
     @CartesianTest
@@ -508,10 +507,9 @@ class SystemTestTest extends TaskTestBase {
                                 + "=/opt/creek/mounts/coverage"));
         assertThat(
                 result.getOutput(),
-                containsString(
-                        "--env=JAVA_TOOL_OPTIONS="
-                            + "-javaagent:/opt/creek/mounts/jacoco/jacocoagent.jar=destfile=/opt/creek/mounts/coverage/systemTest.exec"
-                            + ",append=true,inclnolocationclasses=false,dumponexit=true,output=file,jmx=false"));
+                containsString("--env=JAVA_TOOL_OPTIONS=" + JACOCO_COVERAGE_AGENT));
+
+        assertThat(result.getOutput(), not(containsString("--debug-env=JAVA_TOOL_OPTIONS=")));
     }
 
     @CartesianTest
@@ -535,10 +533,10 @@ class SystemTestTest extends TaskTestBase {
                 result.getOutput(),
                 containsString(
                         "--mount-read-only="
-                                + projectPath("build/creek/mounts/debug")
-                                + "=/opt/creek/mounts/debug,"
                                 + projectPath("build/creek/mounts/jacoco")
-                                + "=/opt/creek/mounts/jacoco"));
+                                + "=/opt/creek/mounts/jacoco,"
+                                + projectPath("build/creek/mounts/debug")
+                                + "=/opt/creek/mounts/debug"));
         assertThat(
                 result.getOutput(),
                 containsString(
@@ -547,12 +545,15 @@ class SystemTestTest extends TaskTestBase {
                                 + "=/opt/creek/mounts/coverage"));
         assertThat(
                 result.getOutput(),
+                containsString("--env=JAVA_TOOL_OPTIONS=" + JACOCO_COVERAGE_AGENT));
+
+        assertThat(
+                result.getOutput(),
                 containsString(
-                        "--env=JAVA_TOOL_OPTIONS="
-                            + "-javaagent:/opt/creek/mounts/debug/attachme-agent-1.2.3.jar=host:host.docker.internal,port:7857"
-                            + " -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${SERVICE_DEBUG_PORT}"
-                            + " -javaagent:/opt/creek/mounts/jacoco/jacocoagent.jar=destfile=/opt/creek/mounts/coverage/systemTest.exec"
-                            + ",append=true,inclnolocationclasses=false,dumponexit=true,output=file,jmx=false"));
+                        "--debug-env=JAVA_TOOL_OPTIONS="
+                                + attachMeDebugAgent(7857)
+                                + " "
+                                + JACOCO_COVERAGE_AGENT));
     }
 
     private void givenTestSuite() {
@@ -565,5 +566,11 @@ class SystemTestTest extends TaskTestBase {
             final String gradleVersion,
             final String... additionalArgs) {
         return executeTask(TASK_NAME, expectedOutcome, gradleVersion, additionalArgs);
+    }
+
+    private static String attachMeDebugAgent(final int port) {
+        return "-javaagent:/opt/creek/mounts/debug/attachme-agent-1.2.3.jar=host:host.docker.internal,port:"
+                + port
+                + " -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${SERVICE_DEBUG_PORT}";
     }
 }

@@ -287,9 +287,8 @@ public abstract class SystemTest extends DefaultTask {
     private List<String> arguments() {
         final List<String> arguments = new ArrayList<>();
         arguments.addAll(commonArguments());
-        arguments.addAll(debugArguments());
         arguments.addAll(coverageArguments());
-        arguments.addAll(javaToolOptionsArgument());
+        arguments.addAll(debugArguments());
         arguments.addAll(getExtraArguments().get());
         return arguments;
     }
@@ -327,6 +326,11 @@ public abstract class SystemTest extends DefaultTask {
             args.add("--debug-service-instance=" + instances);
         }
 
+        final String jto = javaToolOptions(true);
+        if (!jto.isBlank()) {
+            args.add("--debug-env=" + jto);
+        }
+
         return args;
     }
 
@@ -337,19 +341,26 @@ public abstract class SystemTest extends DefaultTask {
             return List.of();
         }
 
-        return ext.mountOptions();
+        final List<String> args = new ArrayList<>(ext.mountOptions());
+        final String jto = javaToolOptions(false);
+        if (!jto.isBlank()) {
+            args.add("--env=" + jto);
+        }
+        return args;
     }
 
-    private List<String> javaToolOptionsArgument() {
+    private String javaToolOptions(final boolean debug) {
         final List<String> options = new ArrayList<>(2);
-        options.add(debugJavaToolOptions());
+        if (debug) {
+            options.add(debugJavaToolOptions());
+        }
         options.add(coverageJavaToolOptions());
         options.removeIf(String::isEmpty);
         if (options.isEmpty()) {
-            return List.of();
+            return "";
         }
 
-        return List.of("--env=JAVA_TOOL_OPTIONS=\"" + String.join(" ", options) + "\"");
+        return "JAVA_TOOL_OPTIONS=\"" + String.join(" ", options) + "\"";
     }
 
     private String debugJavaToolOptions() {
