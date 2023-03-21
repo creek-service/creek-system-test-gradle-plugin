@@ -12,8 +12,16 @@ A Gradle plugin for running Creek system tests as part of a Gradle build.
 
 See [CreekService.org](https://www.creekservice.org) for info on Creek Service.
 
-> ### NOTE
-> The plugin works with Gradle 6.4 and above.
+## Supported Gradle versions
+
+| Gradle Version | Tested version | Minimum Creek Version | Notes                                       |
+|----------------|----------------|-----------------------|---------------------------------------------|
+| < 6.4          |                |                       | Not compatible due to API changes in Gradle |
+| 6.4.+          | 6.4            | <Any>                 | Supported & tested                          |
+| 6.4+           | 6.9.4          | <Any>                 | Supported & tested                          |
+| 7.+            | 7.6.1          | <Any>                 | Supported & tested                          |
+| 8.+            | 8.0.2          | > 4.0.0               | Supported & tested                          |
+| > 8.0.2        |                |                       | Not currently tested. Should work...        |
 
 ## Usage
 

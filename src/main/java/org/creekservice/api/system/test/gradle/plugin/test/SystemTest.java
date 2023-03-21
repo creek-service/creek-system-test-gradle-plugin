@@ -251,7 +251,7 @@ public abstract class SystemTest extends DefaultTask {
         // Initialize coverage if the Jacoco plugin is present, or added later:
         getProject()
                 .getPlugins()
-                .matching(p -> p.getClass().equals(JacocoPlugin.class))
+                .matching(p -> JacocoPlugin.class.isAssignableFrom(p.getClass()))
                 .all(initializer);
     }
 
