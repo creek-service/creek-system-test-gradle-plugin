@@ -120,7 +120,8 @@ public abstract class TaskTestBase {
     @SuppressWarnings("unused") // Invoked by reflection
     protected static ArgumentSets flavoursAndVersions() {
         final Collection<?> flavours = List.of("kotlin", "groovy");
-        final Collection<?> gradleVersions = List.of("6.4", "6.9.2", "7.0", "7.4.2");
+        // Note: update root README.md when updating this test dimension:
+        final Collection<?> gradleVersions = List.of("6.4", "6.9.4", "7.6.1", "8.0.2");
         return ArgumentSets.argumentsForFirstParameter(flavours)
                 .argumentsForNextParameter(gradleVersions);
     }
