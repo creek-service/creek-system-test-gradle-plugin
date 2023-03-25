@@ -62,10 +62,6 @@ dependencies {
     testRuntimeOnly("org.creekservice:creek-system-test-executor:$creekVersion")
 }
 
-pluginBundle {
-    tags = tags + listOf("microservice", "docker", "containers", "blackbox", "testing", "test", "integration-test", "test automation")
-}
-
 gradlePlugin {
     plugins {
         register("CreekPlugin") {
@@ -73,6 +69,7 @@ gradlePlugin {
             implementationClass = "org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin"
             displayName = "Creek system test plugin"
             description = "Executes blackbox testing of services running in Docker containers"
+            tags.set(listOf("creek", "creekservice", "microservice", "docker", "containers", "blackbox", "testing", "test", "integration-test", "test automation"))
         }
     }
 }
