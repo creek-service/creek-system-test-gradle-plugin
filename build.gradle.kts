@@ -34,7 +34,7 @@ allprojects {
 }
 
 val creekVersion = "0.4.2-SNAPSHOT"
-val spotBugsVersion = "4.8.0"         // https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-annotations
+val spotBugsVersion = "4.8.2"         // https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-annotations
 val guavaVersion = "32.1.3-jre"         // https://mvnrepository.com/artifact/com.google.guava/guava
 val log4jVersion = "2.22.0"           // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
 val junitVersion = "5.10.1"            // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
