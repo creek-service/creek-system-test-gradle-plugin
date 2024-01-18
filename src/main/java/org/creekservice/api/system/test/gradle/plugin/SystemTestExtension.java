@@ -75,15 +75,18 @@ public abstract class SystemTestExtension {
 
     /**
      * @return list of additional arguments to pass to the test executor
-     *     <p>See https://github.com/creek-service/creek-system-test/tree/main/executor for more
-     *     info.
+     *     <p>See <a
+     *     href="https://github.com/creek-service/creek-system-test/tree/main/executor">Executor
+     *     docs</a> for more info.
      */
     public abstract ListProperty<String> getExtraArguments();
 
     /**
      * Set additional args to pass to the test executor.
      *
-     * <p>See https://github.com/creek-service/creek-system-test/tree/main/executor for more info.
+     * <p>See <a
+     * href="https://github.com/creek-service/creek-system-test/tree/main/executor">Executor
+     * docs</a> for more info.
      *
      * @param args the extra args to use when running system tests.
      */
@@ -108,4 +111,9 @@ public abstract class SystemTestExtension {
     public void debugging(final Action<DebugExtension> action) {
         action.execute(debugExt);
     }
+
+    // Avoid finalizer attacks: spotbugs CT_CONSTRUCTOR_THROW
+    @SuppressWarnings("deprecation")
+    @Override
+    protected final void finalize() {}
 }
