@@ -39,7 +39,7 @@ val guavaVersion = "33.0.0-jre"         // https://mvnrepository.com/artifact/co
 val log4jVersion = "2.23.0"           // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
 val junitVersion = "5.10.1"            // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
 val junitPioneerVersion = "2.2.0"     // https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer
-val mockitoVersion = "5.10.0"          // https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter
+val mockitoVersion = "5.11.0"          // https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter
 
 dependencies {
     implementation("com.github.spotbugs:spotbugs-annotations:$spotBugsVersion")
