@@ -20,8 +20,8 @@ See [CreekService.org](https://www.creekservice.org) for info on Creek Service.
 | 6.4.+          | 6.4            | <Any>                 | Supported & tested                          |
 | 6.4+           | 6.9.4          | <Any>                 | Supported & tested                          |
 | 7.+            | 7.6.1          | <Any>                 | Supported & tested                          |
-| 8.+            | 8.5            | > 0.4.0               | Supported & tested                          |
-| > 8.5          |                | > 0.4.0               | Not currently tested. Should work...        |
+| 8.+            | 8.8            | > 0.4.0               | Supported & tested                          |
+| > 8.8          |                | > 0.4.0               | Not currently tested. Should work...        |
 
 ## Usage
 

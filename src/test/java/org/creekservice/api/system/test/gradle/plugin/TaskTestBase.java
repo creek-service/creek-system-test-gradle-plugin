@@ -121,7 +121,7 @@ public abstract class TaskTestBase {
     protected static ArgumentSets flavoursAndVersions() {
         final Collection<?> flavours = List.of("kotlin", "groovy");
         // Note: update root README.md when updating this test dimension:
-        final Collection<?> gradleVersions = List.of("6.4", "6.9.4", "7.6.1", "8.5");
+        final Collection<?> gradleVersions = List.of("6.4", "6.9.4", "7.6.1", "8.8");
         return ArgumentSets.argumentsForFirstParameter(flavours)
                 .argumentsForNextParameter(gradleVersions);
     }
