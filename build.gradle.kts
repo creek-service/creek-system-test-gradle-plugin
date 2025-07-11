@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Creek Contributors (https://github.com/creek-service)
+ * Copyright 2022-2025 Creek Contributors (https://github.com/creek-service)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,18 +72,18 @@ gradlePlugin {
 }
 
 tasks.register("writeVersionFile") {
-    val outputDir = file("$buildDir/generated/resources/version")
-    val versionFile = file("$outputDir/creek-system-test-executor.version")
+    val outputDir = layout.buildDirectory.dir("generated/resources/version")
+    val versionFile = outputDir.map { dir -> file("$dir/creek-system-test-executor.version") }
     sourceSets.main.get().output.dir(mapOf("buildBy" to "writeVersionFile"), outputDir)
 
     inputs.property("executorVersion", creekVersion)
     outputs.dir(outputDir).withPropertyName("outputDir")
 
     doLast {
-        outputDir.mkdirs()
+        outputDir.get().asFile.mkdirs()
 
         logger.info("Writing creek-system-test-executor version: $creekVersion to $versionFile")
-        versionFile.writeText(creekVersion)
+        versionFile.get().writeText(creekVersion)
     }
 }
 
