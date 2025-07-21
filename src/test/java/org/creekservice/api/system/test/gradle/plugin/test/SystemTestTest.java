@@ -38,7 +38,6 @@ import java.util.regex.Pattern;
 import org.creekservice.api.system.test.gradle.plugin.TaskTestBase;
 import org.creekservice.api.test.util.TestPaths;
 import org.gradle.testkit.runner.BuildResult;
-import org.junit.jupiter.api.Disabled;
 import org.junitpioneer.jupiter.cartesian.CartesianTest;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.MethodFactory;
 
