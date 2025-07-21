@@ -42,7 +42,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junitpioneer.jupiter.cartesian.CartesianTest;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.MethodFactory;
 
-@Disabled("Temp disabled to see if this fixes build issues")
 @SuppressWarnings("ConstantConditions")
 class SystemTestTest extends TaskTestBase {
 
