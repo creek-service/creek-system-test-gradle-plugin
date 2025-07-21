@@ -48,7 +48,7 @@ class SystemTestTest extends TaskTestBase {
     private static final boolean DEBUG = false;
 
     private static final String TASK_NAME = ":systemTest";
-    public static final String JACOCO_COVERAGE_AGENT =
+    private static final String JACOCO_COVERAGE_AGENT =
             "-javaagent:/opt/creek/mounts/jacoco/jacocoagent.jar=destfile=/opt/creek/mounts/coverage/systemTest.exec"
                 + ",append=true,inclnolocationclasses=false,dumponexit=true,output=file,jmx=false";
 
@@ -56,7 +56,7 @@ class SystemTestTest extends TaskTestBase {
         super(DEBUG);
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldSkipIfTestDirectoryDoesNotExist(final String flavour, final String gradleVersion) {
         // Given:
@@ -69,7 +69,7 @@ class SystemTestTest extends TaskTestBase {
         assertThat(result.task(TASK_NAME).getOutcome(), is(NO_SOURCE));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldSkipIfTestDirectoryEmpty(final String flavour, final String gradleVersion) {
         // Given:
@@ -83,7 +83,7 @@ class SystemTestTest extends TaskTestBase {
         assertThat(result.task(TASK_NAME).getOutcome(), is(NO_SOURCE));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldExecuteWithDefaults(final String flavour, final String gradleVersion) {
         // Given:
@@ -115,7 +115,7 @@ class SystemTestTest extends TaskTestBase {
                 not(matchesPattern(Pattern.compile(".*--class-path=.*guava.*", Pattern.DOTALL))));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldExecuteWithExplicitComponents(final String flavour, final String gradleVersion) {
         // Given:
@@ -131,7 +131,7 @@ class SystemTestTest extends TaskTestBase {
                 matchesPattern(Pattern.compile(".*--class-path=.*guava.*", Pattern.DOTALL)));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldExecuteWithExplicitExtension(final String flavour, final String gradleVersion) {
         // Given:
@@ -147,7 +147,7 @@ class SystemTestTest extends TaskTestBase {
                 matchesPattern(Pattern.compile(".*--class-path=.*guava.*", Pattern.DOTALL)));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldExecuteWithSpecificVersion(final String flavour, final String gradleVersion) {
         // Given:
@@ -161,7 +161,7 @@ class SystemTestTest extends TaskTestBase {
         assertThat(result.getOutput(), containsString("SystemTestExecutor: 0.2.0-SNAPSHOT"));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldExecuteWithCustomProperties(final String flavour, final String gradleVersion) {
         // Given:
@@ -182,7 +182,7 @@ class SystemTestTest extends TaskTestBase {
         assertThat(result.getOutput(), containsString("--include-suites=.*include.*"));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldFailIfSystemTestConfigurationDoesNotContainExecutor(
             final String flavour, final String gradleVersion) {
@@ -201,7 +201,7 @@ class SystemTestTest extends TaskTestBase {
                                 + " configuration."));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldFailOnBadConfig(final String flavour, final String gradleVersion) {
         // Given:
@@ -215,7 +215,7 @@ class SystemTestTest extends TaskTestBase {
         assertThat(result.getOutput(), containsString("Invalid value for option"));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldExecuteWithOptions(final String flavour, final String gradleVersion) {
         // Given:
@@ -239,7 +239,7 @@ class SystemTestTest extends TaskTestBase {
         assertThat(result.getOutput(), containsString("--debug-service-instance=<Not Set>"));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldExecuteWithDebugServices(final String flavour, final String gradleVersion) {
         // Given:
@@ -267,7 +267,7 @@ class SystemTestTest extends TaskTestBase {
                 containsString("--debug-env=JAVA_TOOL_OPTIONS=" + attachMeDebugAgent(1234)));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldExecuteWithDebugOptions(final String flavour, final String gradleVersion) {
         // Given:
@@ -301,7 +301,7 @@ class SystemTestTest extends TaskTestBase {
                 containsString("--debug-env=JAVA_TOOL_OPTIONS=" + attachMeDebugAgent(7857)));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldExecuteWithDebugOptionsJustService(
             final String flavour, final String gradleVersion) {
@@ -322,7 +322,7 @@ class SystemTestTest extends TaskTestBase {
         assertThat(result.getOutput(), containsString("--debug-service-instance=<Not Set>"));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldExecuteWithDebugOptionsJustInstance(
             final String flavour, final String gradleVersion) {
@@ -346,7 +346,7 @@ class SystemTestTest extends TaskTestBase {
                 containsString("--debug-service-instance=instance-c,instance-d"));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldFailWithDebugServicesIfNoAgentJar(final String flavour, final String gradleVersion) {
         // Given:
@@ -361,7 +361,7 @@ class SystemTestTest extends TaskTestBase {
         assertThat(result.getOutput(), containsString("No AttachMe agent jar found."));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldFailWithDebugServicesIfNoAttachMeDir(
             final String flavour, final String gradleVersion) {
@@ -377,7 +377,7 @@ class SystemTestTest extends TaskTestBase {
         assertThat(result.getOutput(), containsString("No AttachMe agent jar found."));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldPrepareDebugBeforeSystemTest(final String flavour, final String gradleVersion) {
         // Given:
@@ -390,7 +390,7 @@ class SystemTestTest extends TaskTestBase {
         assertThat(result.task(":systemTestPrepareDebug").getOutcome(), is(SUCCESS));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldRunSystemTestAsPartOfCheckTask(final String flavour, final String gradleVersion) {
         // Given:
@@ -404,7 +404,7 @@ class SystemTestTest extends TaskTestBase {
         assertThat(result.getOutput(), containsString("SystemTestExecutor: "));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldDeleteOutputDirectoryOnClean(final String flavour, final String gradleVersion) {
         // Given:
@@ -420,7 +420,7 @@ class SystemTestTest extends TaskTestBase {
         assertThat(Files.exists(resultsDir), is(false));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldPlayNicelyWithOthers(final String flavour, final String gradleVersion) {
         // Given:
@@ -433,7 +433,7 @@ class SystemTestTest extends TaskTestBase {
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldNotPrepareCoverageFirstIfJaCoCoNotInstalled(
             final String flavour, final String gradleVersion) {
@@ -448,7 +448,7 @@ class SystemTestTest extends TaskTestBase {
         assertThat(result.task(":systemTestPrepareCoverage"), is(nullValue()));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldPrepareCoverageFirstIfJaCoCoInstalled(
             final String flavour, final String gradleVersion) {
@@ -463,7 +463,7 @@ class SystemTestTest extends TaskTestBase {
         assertThat(result.task(":systemTestPrepareCoverage").getOutcome(), is(SUCCESS));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldDeleteAnyExistingCoverageOutputBeforeRunningSystemTest(
             final String flavour, final String gradleVersion) throws Exception {
@@ -482,7 +482,7 @@ class SystemTestTest extends TaskTestBase {
         assertThat(resultFile, doesNotExist());
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldExecuteWithCoverage(final String flavour, final String gradleVersion) {
         // Given:
@@ -512,7 +512,7 @@ class SystemTestTest extends TaskTestBase {
         assertThat(result.getOutput(), not(containsString("--debug-env=JAVA_TOOL_OPTIONS=")));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldSupportDebuggingAndCoverage(final String flavour, final String gradleVersion) {
         // Given:

@@ -44,7 +44,7 @@ class PrepareDebugTest extends TaskTestBase {
         super(DEBUG);
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldSkipPrepareDebugIfNoNoAttachMeDirectory(
             final String flavour, final String gradleVersion) {
@@ -59,7 +59,7 @@ class PrepareDebugTest extends TaskTestBase {
         assertThat(result.task(TASK_NAME).getOutcome(), is(SKIPPED));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldHandleNoAttachMeAgentJar(final String flavour, final String gradleVersion) {
         // Given:
@@ -79,7 +79,7 @@ class PrepareDebugTest extends TaskTestBase {
                 Files.isDirectory(projectPath("build/creek/mounts/debug")));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldPrepareDebug(final String flavour, final String gradleVersion) {
         // Given:
@@ -96,7 +96,7 @@ class PrepareDebugTest extends TaskTestBase {
                         projectPath("build/creek/mounts/debug/attachme-agent-1.2.3.jar")));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldHandleAgentAlreadyExisting(final String flavour, final String gradleVersion) {
         // Given:

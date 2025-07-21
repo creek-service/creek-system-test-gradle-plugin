@@ -44,7 +44,7 @@ class PrepareCoverageTest extends TaskTestBase {
         super(DEBUG);
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldSkipPrepareCoverageIfNoJaCoCo(final String flavour, final String gradleVersion) {
         // Given:
@@ -57,7 +57,7 @@ class PrepareCoverageTest extends TaskTestBase {
         assertThat(result.task(TASK_NAME).getOutcome(), is(SKIPPED));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldPrepareCoverage(final String flavour, final String gradleVersion) {
         // Given:
@@ -72,7 +72,7 @@ class PrepareCoverageTest extends TaskTestBase {
         assertThat("agent jar exists", Files.isRegularFile(agentJar));
     }
 
-    @CartesianTest
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
     void shouldHandleAgentAlreadyExisting(final String flavour, final String gradleVersion) {
         // Given:
