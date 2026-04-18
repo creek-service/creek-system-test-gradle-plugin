@@ -113,7 +113,8 @@ public abstract class TaskTestBase {
         if (!options.isEmpty()) {
             TestPaths.write(
                     projectDir.resolve("gradle.properties"),
-                    "org.gradle.jvmargs=" + String.join(" ", options));
+                    "org.gradle.jvmargs="
+                            + String.join(" ", options).replace("\\", "\\\\"));
         }
     }
 
