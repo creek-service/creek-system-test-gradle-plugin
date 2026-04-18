@@ -35,8 +35,10 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.testing.jacoco.plugins.JacocoPlugin;
+import org.gradle.work.DisableCachingByDefault;
 
 /** Task for setting up a mount directory storing the Jacoco agent. */
+@DisableCachingByDefault(because = "No inputs")
 public abstract class PrepareCoverage extends DefaultTask {
 
     /**

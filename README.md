@@ -14,12 +14,14 @@ See [CreekService.org](https://www.creekservice.org) for info on Creek Service.
 
 ## Supported Gradle versions
 
-| Gradle Version | Tested version | Minimum Creek Version | Notes                                |
-|----------------|----------------|-----------------------|--------------------------------------|
-| < 7.2          |                |                       | Java 17 not supported by Gradle      |
-| 7.2.+          | 7.2 & 7.6.6    | <Any>                 | Supported & tested                   |
-| 8.+            | 8.0 & 8.14.4   | > 0.4.0               | Supported & tested                   |
-| > 8.14.4       |                | > 0.4.0               | Not currently tested. Should work... |
+| Gradle Version | Tested version | Minimum Creek Version | Notes                                       |
+|----------------|----------------|-----------------------|---------------------------------------------|
+| < 6.4          |                |                       | Not compatible due to API changes in Gradle |
+| < 7.2          |                | < 0.5.0               | Java 17 not supported by Gradle             |
+| 7.2.+          | 7.2 & 7.6.6    | <Any>                 | Supported & tested                          |
+| 8.+            | 8.0 & 8.14.4   | > 0.4.0               | Supported & tested                          |
+| 9.+            | 9.0 & 9.4.1    | > 0.5.0               | Supported & tested                          |
+| > 9.4.1        |                | > 0.5.0               | Not currently tested. Should work...        |
 
 ## Usage
 
