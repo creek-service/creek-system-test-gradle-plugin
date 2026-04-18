@@ -38,6 +38,8 @@ import java.util.regex.Pattern;
 import org.creekservice.api.system.test.gradle.plugin.TaskTestBase;
 import org.creekservice.api.test.util.TestPaths;
 import org.gradle.testkit.runner.BuildResult;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junitpioneer.jupiter.cartesian.CartesianTest;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.MethodFactory;
 
@@ -244,6 +246,9 @@ class SystemTestTest extends TaskTestBase {
 
     @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
+    @DisabledOnOs(
+            value = OS.WINDOWS,
+            disabledReason = "Debug requires Docker Linux containers, unavailable on Windows")
     void shouldExecuteWithDebugServices(final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/debug");
@@ -274,6 +279,9 @@ class SystemTestTest extends TaskTestBase {
 
     @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
+    @DisabledOnOs(
+            value = OS.WINDOWS,
+            disabledReason = "Debug requires Docker Linux containers, unavailable on Windows")
     void shouldExecuteWithDebugOptions(final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/debug_options");
@@ -310,6 +318,9 @@ class SystemTestTest extends TaskTestBase {
 
     @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
+    @DisabledOnOs(
+            value = OS.WINDOWS,
+            disabledReason = "Debug requires Docker Linux containers, unavailable on Windows")
     void shouldExecuteWithDebugOptionsJustService(
             final String flavour, final String gradleVersion) {
         // Given:
@@ -331,6 +342,9 @@ class SystemTestTest extends TaskTestBase {
 
     @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
+    @DisabledOnOs(
+            value = OS.WINDOWS,
+            disabledReason = "Debug requires Docker Linux containers, unavailable on Windows")
     void shouldExecuteWithDebugOptionsJustInstance(
             final String flavour, final String gradleVersion) {
         // Given:
@@ -386,6 +400,9 @@ class SystemTestTest extends TaskTestBase {
 
     @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
+    @DisabledOnOs(
+            value = OS.WINDOWS,
+            disabledReason = "Debug requires Docker Linux containers, unavailable on Windows")
     void shouldPrepareDebugBeforeSystemTest(final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/debug");
@@ -491,6 +508,9 @@ class SystemTestTest extends TaskTestBase {
 
     @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
+    @DisabledOnOs(
+            value = OS.WINDOWS,
+            disabledReason = "Coverage requires Docker Linux containers, unavailable on Windows")
     void shouldExecuteWithCoverage(final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/with_jacoco");
@@ -521,6 +541,10 @@ class SystemTestTest extends TaskTestBase {
 
     @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
+    @DisabledOnOs(
+            value = OS.WINDOWS,
+            disabledReason =
+                    "Debug and coverage require Docker Linux containers, unavailable on Windows")
     void shouldSupportDebuggingAndCoverage(final String flavour, final String gradleVersion) {
         // Given:
         givenProject(flavour + "/with_jacoco");
