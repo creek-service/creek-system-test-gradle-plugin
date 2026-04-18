@@ -269,8 +269,7 @@ class SystemTestTest extends TaskTestBase {
                 result.getOutput(),
                 containsString("--debug-env=JAVA_TOOL_OPTIONS=" + JDWP_DEBUG_AGENT));
         assertThat(
-                result.getOutput(),
-                containsString("JDK_JAVA_OPTIONS=" + attachMeDebugAgent(1234)));
+                result.getOutput(), containsString("JDK_JAVA_OPTIONS=" + attachMeDebugAgent(1234)));
     }
 
     @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
@@ -306,8 +305,7 @@ class SystemTestTest extends TaskTestBase {
                 result.getOutput(),
                 containsString("--debug-env=JAVA_TOOL_OPTIONS=" + JDWP_DEBUG_AGENT));
         assertThat(
-                result.getOutput(),
-                containsString("JDK_JAVA_OPTIONS=" + attachMeDebugAgent(7857)));
+                result.getOutput(), containsString("JDK_JAVA_OPTIONS=" + attachMeDebugAgent(7857)));
     }
 
     @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
@@ -563,8 +561,7 @@ class SystemTestTest extends TaskTestBase {
                 result.getOutput(),
                 containsString("--debug-env=JAVA_TOOL_OPTIONS=" + JDWP_DEBUG_AGENT));
         assertThat(
-                result.getOutput(),
-                containsString("JDK_JAVA_OPTIONS=" + attachMeDebugAgent(7857)));
+                result.getOutput(), containsString("JDK_JAVA_OPTIONS=" + attachMeDebugAgent(7857)));
     }
 
     private void givenTestSuite() {
