@@ -15,9 +15,10 @@
  */
 
 /**
- * Standard coverage configuration of Creek projects, utilising Jacoco and Coveralls.io
+ * Standard coverage configuration of Creek projects, utilising Jacoco.
  *
  * <p>Versions:
+ *  - 1.4: Remove unmaintained Coveralls Gradle plugin: replaced by coverallsapp/github-action
  *  - 1.3: remove deprecated use of $buildDir
  *  - 1.2: Apply to root project only
  */
@@ -25,7 +26,6 @@
 plugins {
     java
     jacoco
-    id("com.github.kt3k.coveralls")
 }
 
 repositories {
@@ -62,15 +62,3 @@ val coverage = tasks.register<JacocoReport>("coverage") {
     }
 }
 
-coveralls {
-    sourceDirs = allprojects.flatMap{it.sourceSets.main.get().allSource.srcDirs}.map{it.toString()}
-    jacocoReportPath = layout.buildDirectory.file("reports/jacoco/coverage/coverage.xml")
-}
-
-tasks.coveralls {
-    group = "creek"
-    description = "Uploads the aggregated coverage report to Coveralls"
-
-    dependsOn(coverage)
-    onlyIf{System.getenv("CI") != null}
-}
