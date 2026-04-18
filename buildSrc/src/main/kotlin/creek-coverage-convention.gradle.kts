@@ -18,6 +18,7 @@
  * Standard coverage configuration of Creek projects, utilising Jacoco.
  *
  * <p>Versions:
+ *  - 1.5: Disable JaCoCo on Windows to avoid Gradle 9 fingerprinting locked exec file
  *  - 1.4: Remove unmaintained Coveralls Gradle plugin: replaced by coverallsapp/github-action
  *  - 1.3: remove deprecated use of $buildDir
  *  - 1.2: Apply to root project only
@@ -37,6 +38,17 @@ allprojects {
 
     tasks.withType<JacocoReport>().configureEach{
         dependsOn(tasks.test)
+    }
+
+    // On Windows, Gradle 9 tries to fingerprint the JaCoCo exec output file after tests run,
+    // but the file may still be locked by the JVM, causing the build to fail.
+    // Coverage data is only needed on Linux where it is uploaded to Coveralls.
+    if (org.gradle.internal.os.OperatingSystem.current().isWindows) {
+        tasks.withType<Test>().configureEach {
+            extensions.configure<JacocoTaskExtension> {
+                isEnabled = false
+            }
+        }
     }
 }
 
