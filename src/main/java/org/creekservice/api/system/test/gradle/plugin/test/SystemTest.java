@@ -339,9 +339,21 @@ public abstract class SystemTest extends DefaultTask {
             args.add("--debug-service-instance=" + instances);
         }
 
-        final String jto = javaToolOptions(true);
-        if (!jto.isBlank()) {
-            args.add("--debug-env=" + jto);
+        // The JDWP agent goes in JAVA_TOOL_OPTIONS, as the executor replaces the
+        // ${SERVICE_DEBUG_PORT} placeholder with the actual port only in that env var.
+        final String jdwp = jdwpJvmArg();
+        if (!jdwp.isBlank()) {
+            args.add("--debug-env=JAVA_TOOL_OPTIONS=\"" + jdwp + "\"");
+        }
+
+        // The AttachMe agent goes in JDK_JAVA_OPTIONS (supported by Java 9+) to avoid
+        // combining two JVM options with a space separator in JAVA_TOOL_OPTIONS.
+        // Combining with a space would cause Java's ProcessBuilder to wrap the argument in
+        // double-quotes on Windows, but the embedded double-quotes in the value would then
+        // cause the argument to be incorrectly split on Windows.
+        final String attachMe = attachMeJvmArg();
+        if (!attachMe.isBlank()) {
+            args.add("--debug-env=JDK_JAVA_OPTIONS=\"" + attachMe + "\"");
         }
 
         return args;
@@ -355,28 +367,29 @@ public abstract class SystemTest extends DefaultTask {
         }
 
         final List<String> args = new ArrayList<>(ext.mountOptions());
-        final String jto = javaToolOptions(false);
+        final String jto = javaToolOptions();
         if (!jto.isBlank()) {
             args.add("--env=" + jto);
         }
         return args;
     }
 
-    private String javaToolOptions(final boolean debug) {
-        final List<String> options = new ArrayList<>(2);
-        if (debug) {
-            options.add(debugJavaToolOptions());
-        }
-        options.add(coverageJavaToolOptions());
-        options.removeIf(String::isEmpty);
-        if (options.isEmpty()) {
+    private String javaToolOptions() {
+        final String coverage = coverageJavaToolOptions();
+        if (coverage.isEmpty()) {
             return "";
         }
-
-        return "JAVA_TOOL_OPTIONS=\"" + String.join(" ", options) + "\"";
+        return "JAVA_TOOL_OPTIONS=\"" + coverage + "\"";
     }
 
-    private String debugJavaToolOptions() {
+    private String jdwpJvmArg() {
+        if (nothingToDebug()) {
+            return "";
+        }
+        return "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${SERVICE_DEBUG_PORT}";
+    }
+
+    private String attachMeJvmArg() {
         if (nothingToDebug()) {
             return "";
         }
@@ -400,8 +413,7 @@ public abstract class SystemTest extends DefaultTask {
                 + CONTAINER_DEBUG_MOUNT
                 + agentJar
                 + "=host:host.docker.internal,port:"
-                + getDebugAttachMePort().get()
-                + " -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${SERVICE_DEBUG_PORT}";
+                + getDebugAttachMePort().get();
     }
 
     private String coverageJavaToolOptions() {

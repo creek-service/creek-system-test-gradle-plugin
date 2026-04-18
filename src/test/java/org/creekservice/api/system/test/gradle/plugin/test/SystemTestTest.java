@@ -52,6 +52,9 @@ class SystemTestTest extends TaskTestBase {
             "-javaagent:/opt/creek/mounts/jacoco/jacocoagent.jar=destfile=/opt/creek/mounts/coverage/systemTest.exec"
                 + ",append=true,inclnolocationclasses=false,dumponexit=true,output=file,jmx=false";
 
+    private static final String JDWP_DEBUG_AGENT =
+            "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${SERVICE_DEBUG_PORT}";
+
     SystemTestTest() {
         super(DEBUG);
     }
@@ -264,7 +267,10 @@ class SystemTestTest extends TaskTestBase {
         assertThat(result.getOutput(), not(containsString("--env=JAVA_TOOL_OPTIONS=")));
         assertThat(
                 result.getOutput(),
-                containsString("--debug-env=JAVA_TOOL_OPTIONS=" + attachMeDebugAgent(1234)));
+                containsString("--debug-env=JAVA_TOOL_OPTIONS=" + JDWP_DEBUG_AGENT));
+        assertThat(
+                result.getOutput(),
+                containsString("JDK_JAVA_OPTIONS=" + attachMeDebugAgent(1234)));
     }
 
     @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
@@ -298,7 +304,10 @@ class SystemTestTest extends TaskTestBase {
         assertThat(result.getOutput(), not(containsString("--env=JAVA_TOOL_OPTIONS=")));
         assertThat(
                 result.getOutput(),
-                containsString("--debug-env=JAVA_TOOL_OPTIONS=" + attachMeDebugAgent(7857)));
+                containsString("--debug-env=JAVA_TOOL_OPTIONS=" + JDWP_DEBUG_AGENT));
+        assertThat(
+                result.getOutput(),
+                containsString("JDK_JAVA_OPTIONS=" + attachMeDebugAgent(7857)));
     }
 
     @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
@@ -547,13 +556,15 @@ class SystemTestTest extends TaskTestBase {
                 result.getOutput(),
                 containsString("--env=JAVA_TOOL_OPTIONS=" + JACOCO_COVERAGE_AGENT));
 
+        // The JDWP and AttachMe agents are now in separate env vars to avoid combining
+        // multiple JVM options with a space separator, which breaks Windows arg parsing.
+        // As a result, JaCoCo coverage is no longer applied to services being debugged.
         assertThat(
                 result.getOutput(),
-                containsString(
-                        "--debug-env=JAVA_TOOL_OPTIONS="
-                                + attachMeDebugAgent(7857)
-                                + " "
-                                + JACOCO_COVERAGE_AGENT));
+                containsString("--debug-env=JAVA_TOOL_OPTIONS=" + JDWP_DEBUG_AGENT));
+        assertThat(
+                result.getOutput(),
+                containsString("JDK_JAVA_OPTIONS=" + attachMeDebugAgent(7857)));
     }
 
     private void givenTestSuite() {
@@ -570,7 +581,6 @@ class SystemTestTest extends TaskTestBase {
 
     private static String attachMeDebugAgent(final int port) {
         return "-javaagent:/opt/creek/mounts/debug/attachme-agent-1.2.3.jar=host:host.docker.internal,port:"
-                + port
-                + " -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:${SERVICE_DEBUG_PORT}";
+                + port;
     }
 }
