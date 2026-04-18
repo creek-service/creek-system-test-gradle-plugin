@@ -35,9 +35,13 @@ import org.gradle.api.file.FileTree;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.work.DisableCachingByDefault;
 
 /** Task for setting up a mount directory storing the AttachMe debug agent. */
+@DisableCachingByDefault(because = "output is machine specific")
 public abstract class PrepareDebug extends DefaultTask {
 
     /**
@@ -68,6 +72,7 @@ public abstract class PrepareDebug extends DefaultTask {
      * @return the local directory where the AttachMe agent is located.
      */
     @InputDirectory
+    @PathSensitive(PathSensitivity.NONE)
     public abstract DirectoryProperty getAttachMeDirectory();
 
     /**
