@@ -373,7 +373,7 @@ public abstract class SystemTest extends DefaultTask {
             return "";
         }
 
-        return "JAVA_TOOL_OPTIONS=\"" + String.join(" ", options) + "\"";
+        return "JAVA_TOOL_OPTIONS=" + String.join(" ", options);
     }
 
     private String debugJavaToolOptions() {
