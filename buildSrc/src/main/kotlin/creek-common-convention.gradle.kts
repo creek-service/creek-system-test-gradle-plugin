@@ -90,6 +90,14 @@ tasks.test {
         showExceptions = true
         showStackTraces = true
     }
+
+    // JaCoCo causes file-locking issues on Windows when Gradle tries to fingerprint
+    // the test.exec output after forked JVMs finish. Coverage is reported on Linux only.
+    if (org.gradle.internal.os.OperatingSystem.current().isWindows) {
+        extensions.configure<JacocoTaskExtension> {
+            isEnabled = false
+        }
+    }
 }
 
 spotless {
