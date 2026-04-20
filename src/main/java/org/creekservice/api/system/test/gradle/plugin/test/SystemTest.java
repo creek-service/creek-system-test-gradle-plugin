@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import javax.inject.Inject;
 import org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin;
 import org.creekservice.api.system.test.gradle.plugin.coverage.SystemTestCoverageExtension;
 import org.creekservice.api.system.test.gradle.plugin.debug.PrepareDebug;
@@ -41,16 +42,21 @@ import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.SetProperty;
+import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.options.Option;
+import org.gradle.process.ExecOperations;
 import org.gradle.testing.jacoco.plugins.JacocoPlugin;
 
 /** Task for running Creek system tests. */
+@CacheableTask
 public abstract class SystemTest extends DefaultTask {
 
     /**
@@ -78,10 +84,17 @@ public abstract class SystemTest extends DefaultTask {
     }
 
     /**
+     * @return the exec operations service for running Java processes.
+     */
+    @Inject
+    protected abstract ExecOperations getExecOperations();
+
+    /**
      * @return the source directory containing test
      */
     @SkipWhenEmpty
     @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
     public abstract DirectoryProperty getTestDirectory();
 
     /**
@@ -224,7 +237,7 @@ public abstract class SystemTest extends DefaultTask {
         cleanUp();
         checkDependenciesIncludesRunner();
 
-        getProject()
+        getExecOperations()
                 .javaexec(
                         spec -> {
                             spec.getMainClass()
@@ -360,7 +373,7 @@ public abstract class SystemTest extends DefaultTask {
             return "";
         }
 
-        return "JAVA_TOOL_OPTIONS=\"" + String.join(" ", options) + "\"";
+        return "JAVA_TOOL_OPTIONS=" + String.join(" ", options);
     }
 
     private String debugJavaToolOptions() {

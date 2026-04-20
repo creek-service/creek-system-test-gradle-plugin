@@ -125,22 +125,36 @@ public final class SystemTestPlugin implements Plugin<Project> {
 
     private void registerSystemTestTask(
             final Project project, final SystemTestExtension extension) {
-        final SystemTest task = project.getTasks().create(SYSTEM_TEST_TASK_NAME, SystemTest.class);
+        final var taskProvider =
+                project.getTasks()
+                        .register(
+                                SYSTEM_TEST_TASK_NAME,
+                                SystemTest.class,
+                                task -> {
+                                    task.setGroup(GROUP_NAME);
+                                    task.getTestDirectory().set(extension.getTestDirectory());
+                                    task.getResultDirectory().set(extension.getResultDirectory());
+                                    task.getExtraArguments().set(extension.getExtraArguments());
+                                    task.getVerificationTimeoutSeconds()
+                                            .set(extension.getVerificationTimeoutSeconds());
+                                    task.getSuitesPathPattern()
+                                            .set(extension.getSuitePathPattern());
 
-        task.setGroup(GROUP_NAME);
-        task.getTestDirectory().set(extension.getTestDirectory());
-        task.getResultDirectory().set(extension.getResultDirectory());
-        task.getExtraArguments().set(extension.getExtraArguments());
-        task.getVerificationTimeoutSeconds().set(extension.getVerificationTimeoutSeconds());
-        task.getSuitesPathPattern().set(extension.getSuitePathPattern());
-
-        task.getDebugAttachMePort().set(extension.getDebugging().getAttachMePort());
-        task.getDebugBaseServicePort().set(extension.getDebugging().getBaseServicePort());
-        task.getDebugServiceNames().set(extension.getDebugging().getServiceNames());
-        task.getDebugServiceInstanceNames().set(extension.getDebugging().getServiceInstanceNames());
+                                    task.getDebugAttachMePort()
+                                            .set(extension.getDebugging().getAttachMePort());
+                                    task.getDebugBaseServicePort()
+                                            .set(extension.getDebugging().getBaseServicePort());
+                                    task.getDebugServiceNames()
+                                            .set(extension.getDebugging().getServiceNames());
+                                    task.getDebugServiceInstanceNames()
+                                            .set(
+                                                    extension
+                                                            .getDebugging()
+                                                            .getServiceInstanceNames());
+                                });
 
         project.getTasksByName(LifecycleBasePlugin.CHECK_TASK_NAME, false)
-                .forEach(checkTask -> checkTask.dependsOn(task));
+                .forEach(checkTask -> checkTask.dependsOn(taskProvider));
     }
 
     private void registerPrepareDebugTask(final Project project) {
@@ -153,7 +167,6 @@ public final class SystemTestPlugin implements Plugin<Project> {
 
     private void registerSystemTestExecutorConfiguration(final Project project) {
         final Configuration cfg = project.getConfigurations().create(EXECUTOR_CONFIGURATION_NAME);
-        cfg.setVisible(false);
         cfg.setTransitive(true);
         cfg.setCanBeConsumed(false);
         cfg.setCanBeResolved(true);
@@ -175,7 +188,6 @@ public final class SystemTestPlugin implements Plugin<Project> {
 
     private void registerSystemTestExtensionConfiguration(final Project project) {
         final Configuration cfg = project.getConfigurations().create(EXTENSION_CONFIGURATION_NAME);
-        cfg.setVisible(false);
         cfg.setTransitive(true);
         cfg.setCanBeConsumed(false);
         cfg.setCanBeResolved(true);
@@ -188,7 +200,6 @@ public final class SystemTestPlugin implements Plugin<Project> {
 
     private void registerSystemTestComponentConfiguration(final Project project) {
         final Configuration cfg = project.getConfigurations().create(COMPONENT_CONFIGURATION_NAME);
-        cfg.setVisible(false);
         cfg.setTransitive(true);
         cfg.setCanBeConsumed(false);
         cfg.setCanBeResolved(true);

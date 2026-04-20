@@ -1,7 +1,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/org.creekservice.system.test?label=Gradle%20Plugin%20Portal)](https://plugins.gradle.org/plugin/org.creekservice.system.test)
 [![build](https://github.com/creek-service/creek-system-test-gradle-plugin/actions/workflows/build.yml/badge.svg)](https://github.com/creek-service/creek-system-test-gradle-plugin/actions/workflows/build.yml)
-[![Coverage Status](https://coveralls.io/repos/github/creek-service/creek-system-test-gradle-plugin/badge.svg?branch=main)](https://coveralls.io/github/creek-service/creek-system-test-gradle-plugin?branch=main)
+[![codecov](https://codecov.io/gh/creek-service/creek-system-test-gradle-plugin/branch/main/graph/badge.svg)](https://codecov.io/gh/creek-service/creek-system-test-gradle-plugin)
 [![CodeQL](https://github.com/creek-service/creek-system-test-gradle-plugin/actions/workflows/codeql.yml/badge.svg)](https://github.com/creek-service/creek-system-test-gradle-plugin/actions/workflows/codeql.yml)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/creek-service/creek-system-test-gradle-plugin/badge)](https://api.securityscorecards.dev/projects/github.com/creek-service/creek-system-test-gradle-plugin)
 [![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/6899/badge)](https://bestpractices.coreinfrastructure.org/projects/6899)
@@ -17,11 +17,11 @@ See [CreekService.org](https://www.creekservice.org) for info on Creek Service.
 | Gradle Version | Tested version | Minimum Creek Version | Notes                                       |
 |----------------|----------------|-----------------------|---------------------------------------------|
 | < 6.4          |                |                       | Not compatible due to API changes in Gradle |
-| 6.4.+          | 6.4            | <Any>                 | Supported & tested                          |
-| 6.4+           | 6.9.4          | <Any>                 | Supported & tested                          |
-| 7.+            | 7.6.1          | <Any>                 | Supported & tested                          |
-| 8.+            | 8.8            | > 0.4.0               | Supported & tested                          |
-| > 8.8          |                | > 0.4.0               | Not currently tested. Should work...        |
+| < 7.2          |                | < 0.5.0               | Java 17 not supported by Gradle             |
+| 7.2.+          | 7.2 & 7.6.6    | <Any>                 | Supported & tested                          |
+| 8.+            | 8.0 & 8.14.4   | > 0.4.0               | Supported & tested                          |
+| 9.+            | 9.0 & 9.4.1    | > 0.5.0               | Supported & tested                          |
+| > 9.4.1        |                | > 0.5.0               | Not currently tested. Should work...        |
 
 ## Usage
 

@@ -43,7 +43,7 @@ group = "org.creekservice"
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
@@ -90,11 +90,19 @@ tasks.test {
         showExceptions = true
         showStackTraces = true
     }
+
+    // JaCoCo causes file-locking issues on Windows when Gradle tries to fingerprint
+    // the test.exec output after forked JVMs finish. Coverage is reported on Linux only.
+    if (org.gradle.internal.os.OperatingSystem.current().isWindows) {
+        extensions.configure<JacocoTaskExtension> {
+            isEnabled = false
+        }
+    }
 }
 
 spotless {
     java {
-        googleJavaFormat("1.15.0").aosp().reflowLongStrings()
+        googleJavaFormat("1.25.2").aosp().reflowLongStrings()
         leadingTabsToSpaces()
         importOrder()
         removeUnusedImports()
