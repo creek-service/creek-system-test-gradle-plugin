@@ -16,7 +16,6 @@
 
 package org.creekservice.api.system.test.gradle.plugin.test;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.creekservice.api.system.test.gradle.plugin.ExecutorVersion.defaultExecutorVersion;
 import static org.creekservice.api.system.test.gradle.plugin.TaskTestBase.ExpectedOutcome.FAIL;
 import static org.creekservice.api.system.test.gradle.plugin.TaskTestBase.ExpectedOutcome.PASS;
@@ -465,6 +464,21 @@ class SystemTestTest extends TaskTestBase {
 
     @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
     @MethodFactory("flavoursAndVersions")
+    void shouldCreateCoverageMountDirIfItDoesNotExist(
+            final String flavour, final String gradleVersion) {
+        // Given: no pre-existing coverage directory (clean build)
+        givenProject(flavour + "/with_jacoco");
+
+        // When:
+        final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
+
+        // Then:
+        assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
+        assertThat(Files.isDirectory(projectPath("build/creek/mounts/coverage")), is(true));
+    }
+
+    @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
+    @MethodFactory("flavoursAndVersions")
     void shouldDeleteAnyExistingCoverageOutputBeforeRunningSystemTest(
             final String flavour, final String gradleVersion) throws Exception {
         // Given:
@@ -472,7 +486,7 @@ class SystemTestTest extends TaskTestBase {
 
         final Path resultFile =
                 givenDirectory("build/creek/mounts/coverage").resolve("systemTest.exec");
-        Files.write(resultFile, "Some Data".getBytes(UTF_8));
+        Files.writeString(resultFile, "Some Data");
 
         // When:
         final BuildResult result = executeTask(ExpectedOutcome.PASS, gradleVersion);
