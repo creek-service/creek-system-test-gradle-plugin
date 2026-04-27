@@ -138,12 +138,9 @@ public class SystemTestCoverageExtension {
     /** Remove any previous results */
     public void cleanUp() {
         try {
-            Files.deleteIfExists(
-                    getResultMountDirectory()
-                            .getAsFile()
-                            .get()
-                            .toPath()
-                            .resolve(getResultFileName().get()));
+            final Path mountDir = getResultMountDirectory().getAsFile().get().toPath();
+            Files.createDirectories(mountDir);
+            Files.deleteIfExists(mountDir.resolve(getResultFileName().get()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
