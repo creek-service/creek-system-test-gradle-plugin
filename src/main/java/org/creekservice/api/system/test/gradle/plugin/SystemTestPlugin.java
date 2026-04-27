@@ -27,10 +27,10 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
+import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.ExtensionContainer;
-import org.gradle.api.tasks.util.PatternFilterable;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.gradle.testing.base.plugins.TestingBasePlugin;
 import org.gradle.testing.jacoco.tasks.JacocoReport;
@@ -216,25 +216,26 @@ public final class SystemTestPlugin implements Plugin<Project> {
 
     private void addSystemTestCoverageToAllProjectsWithJacoco(
             final Project projectWithSystemTests) {
-        final PatternFilterable execDataFiles =
-                projectWithSystemTests
-                        .fileTree(
-                                projectWithSystemTests
-                                        .getLayout()
-                                        .getBuildDirectory()
-                                        .dir(HOST_MOUNT_DIR + "coverage"))
-                        .include("*.exec");
+        final ConfigurableFileTree execDataFiles =
+                projectWithSystemTests.fileTree(
+                        projectWithSystemTests
+                                .getLayout()
+                                .getBuildDirectory()
+                                .dir(HOST_MOUNT_DIR + "coverage"),
+                        tree -> tree.include("*.exec"));
 
-        projectWithSystemTests
-                .getRootProject()
-                .subprojects(
-                        sub ->
-                                sub.getTasks()
-                                        .withType(JacocoReport.class)
-                                        .configureEach(
-                                                report ->
-                                                        report.getExecutionData()
-                                                                .from(execDataFiles)));
+        final Project root = projectWithSystemTests.getRootProject();
+
+        root.getTasks()
+                .withType(JacocoReport.class)
+                .configureEach(report -> report.getExecutionData().from(execDataFiles));
+
+        root.subprojects(
+                sub ->
+                        sub.getTasks()
+                                .withType(JacocoReport.class)
+                                .configureEach(
+                                        report -> report.getExecutionData().from(execDataFiles)));
     }
 
     private ExtensionAware ensureCreekExtension(final Project project) {
