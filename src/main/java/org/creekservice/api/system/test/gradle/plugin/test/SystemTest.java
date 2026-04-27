@@ -273,7 +273,10 @@ public abstract class SystemTest extends DefaultTask {
                 getExtensions().findByType(SystemTestCoverageExtension.class);
         if (ext != null) {
             ext.cleanUp();
-            getLogger().info("Coverage data will be written to " + ext.getDestinationFile());
+            getLogger()
+                    .info(
+                            "Coverage data will be written to "
+                                    + ext.getResultMountDirectory().get());
         }
     }
 

@@ -19,19 +19,17 @@ package org.creekservice.api.system.test.gradle.plugin.coverage;
 import static org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin.CONTAINER_MOUNT_DIR;
 import static org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin.HOST_MOUNT_DIR;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 import org.creekservice.api.system.test.gradle.plugin.SystemTestPlugin;
 import org.creekservice.api.system.test.gradle.plugin.test.SystemTest;
 import org.gradle.api.Project;
 import org.gradle.api.file.DirectoryProperty;
-import org.gradle.api.provider.Property;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputDirectory;
 
 /**
@@ -57,7 +55,6 @@ public class SystemTestCoverageExtension {
     public static final String CONTAINER_RESULT_MOUNT = CONTAINER_MOUNT_DIR + "coverage/";
 
     private final PrepareCoverage prepareTask;
-    private final Property<String> resultFileName;
     private final DirectoryProperty mountDir;
 
     /**
@@ -67,21 +64,9 @@ public class SystemTestCoverageExtension {
      */
     public SystemTestCoverageExtension(final SystemTest task) {
         this.prepareTask = prepareCoverageTask(task.getProject());
-        this.resultFileName = task.getProject().getObjects().property(String.class);
-        this.resultFileName.convention(task.getName() + ".exec");
         this.mountDir = task.getProject().getObjects().directoryProperty();
         this.mountDir.convention(
                 task.getProject().getLayout().getBuildDirectory().dir(HOST_MOUNT_DIR + "coverage"));
-    }
-
-    /**
-     * @return the file name, with in the {@link #getResultMountDirectory() mount directory}, where
-     *     coverage results will be written.
-     */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intentional")
-    @Input
-    public Property<String> getResultFileName() {
-        return resultFileName;
     }
 
     /**
@@ -91,14 +76,6 @@ public class SystemTestCoverageExtension {
     @OutputDirectory
     public DirectoryProperty getResultMountDirectory() {
         return mountDir;
-    }
-
-    /**
-     * @return the path to where the execution data is written.
-     */
-    @Internal
-    public File getDestinationFile() {
-        return getResultMountDirectory().get().file(getResultFileName().get()).getAsFile();
     }
 
     /**
@@ -131,18 +108,35 @@ public class SystemTestCoverageExtension {
                 + agentJarFileName
                 + "=destfile="
                 + CONTAINER_RESULT_MOUNT
-                + getResultFileName().get()
+                + "${SERVICE_INSTANCE_NAME}.exec"
                 + ",append=true,inclnolocationclasses=false,dumponexit=true,output=file,jmx=false";
     }
 
     /** Remove any previous results */
     public void cleanUp() {
         try {
-            final Path mountDir = getResultMountDirectory().getAsFile().get().toPath();
-            Files.createDirectories(mountDir);
-            Files.deleteIfExists(mountDir.resolve(getResultFileName().get()));
+            final Path dir = getResultMountDirectory().getAsFile().get().toPath();
+            deleteDirectory(dir);
+            Files.createDirectories(dir);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static void deleteDirectory(final Path dir) throws IOException {
+        if (!Files.exists(dir)) {
+            return;
+        }
+        try (Stream<Path> paths = Files.walk(dir)) {
+            paths.sorted(Comparator.reverseOrder())
+                    .forEach(
+                            p -> {
+                                try {
+                                    Files.delete(p);
+                                } catch (IOException e) {
+                                    throw new UncheckedIOException(e);
+                                }
+                            });
         }
     }
 

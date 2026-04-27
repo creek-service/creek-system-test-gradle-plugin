@@ -30,8 +30,10 @@ import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.ExtensionContainer;
+import org.gradle.api.tasks.util.PatternFilterable;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.gradle.testing.base.plugins.TestingBasePlugin;
+import org.gradle.testing.jacoco.tasks.JacocoReport;
 
 /** Plugin for running Creek system tests. */
 public final class SystemTestPlugin implements Plugin<Project> {
@@ -102,6 +104,7 @@ public final class SystemTestPlugin implements Plugin<Project> {
         registerSystemTestExecutorConfiguration(project);
         registerSystemTestExtensionConfiguration(project);
         registerSystemTestComponentConfiguration(project);
+        addSystemTestCoverageToAllProjectsWithJacoco(project);
     }
 
     private SystemTestExtension registerExtension(final Project project) {
@@ -209,6 +212,29 @@ public final class SystemTestPlugin implements Plugin<Project> {
         project.getTasks()
                 .withType(SystemTest.class)
                 .configureEach(task -> task.getSystemTestComponents().from(cfg));
+    }
+
+    private void addSystemTestCoverageToAllProjectsWithJacoco(
+            final Project projectWithSystemTests) {
+        final PatternFilterable execDataFiles =
+                projectWithSystemTests
+                        .fileTree(
+                                projectWithSystemTests
+                                        .getLayout()
+                                        .getBuildDirectory()
+                                        .dir(HOST_MOUNT_DIR + "coverage"))
+                        .include("*.exec");
+
+        projectWithSystemTests
+                .getRootProject()
+                .subprojects(
+                        sub ->
+                                sub.getTasks()
+                                        .withType(JacocoReport.class)
+                                        .configureEach(
+                                                report ->
+                                                        report.getExecutionData()
+                                                                .from(execDataFiles)));
     }
 
     private ExtensionAware ensureCreekExtension(final Project project) {
