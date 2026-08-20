@@ -26,6 +26,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 /** Util class for finding the AttachMe agent jar */
+@SuppressFBWarnings(
+        value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE",
+        justification = "Path.getFileName() will not return null for real file paths")
 final class AttachMeAgentJarFinder {
 
     private static final PathMatcher JAR_MATCHER =
@@ -33,9 +36,6 @@ final class AttachMeAgentJarFinder {
 
     private AttachMeAgentJarFinder() {}
 
-    @SuppressFBWarnings(
-            value = "NP_NULL_ON_SOME_PATH",
-            justification = "Path.getFileName() will not return null for real file paths")
     public static Optional<Path> findAttacheMeAgentJar(final Path attachMeDir) {
         try (Stream<Path> stream = Files.list(attachMeDir)) {
             return stream.filter(Files::isRegularFile)
