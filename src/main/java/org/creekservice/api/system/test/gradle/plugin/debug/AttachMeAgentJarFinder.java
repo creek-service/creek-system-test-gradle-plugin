@@ -36,7 +36,12 @@ final class AttachMeAgentJarFinder {
         try (Stream<Path> stream = Files.list(attachMeDir)) {
             return stream.filter(Files::isRegularFile)
                     .filter(JAR_MATCHER::matches)
-                    .filter(p -> p.getFileName().toString().startsWith("attachme-agent-"))
+                    .filter(
+                            p -> {
+                                final Path fileName = p.getFileName();
+                                return fileName != null
+                                        && fileName.toString().startsWith("attachme-agent-");
+                            })
                     .sorted()
                     .reduce((l, r) -> r);
         } catch (final IOException e) {
