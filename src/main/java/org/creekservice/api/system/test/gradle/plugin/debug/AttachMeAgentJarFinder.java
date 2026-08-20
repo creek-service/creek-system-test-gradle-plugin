@@ -16,6 +16,7 @@
 
 package org.creekservice.api.system.test.gradle.plugin.debug;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -32,16 +33,14 @@ final class AttachMeAgentJarFinder {
 
     private AttachMeAgentJarFinder() {}
 
+    @SuppressFBWarnings(
+            value = "NP_NULL_ON_SOME_PATH",
+            justification = "Path.getFileName() will not return null for real file paths")
     public static Optional<Path> findAttacheMeAgentJar(final Path attachMeDir) {
         try (Stream<Path> stream = Files.list(attachMeDir)) {
             return stream.filter(Files::isRegularFile)
                     .filter(JAR_MATCHER::matches)
-                    .filter(
-                            p -> {
-                                final Path fileName = p.getFileName();
-                                return fileName != null
-                                        && fileName.toString().startsWith("attachme-agent-");
-                            })
+                    .filter(p -> p.getFileName().toString().startsWith("attachme-agent-"))
                     .sorted()
                     .reduce((l, r) -> r);
         } catch (final IOException e) {
