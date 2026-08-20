@@ -16,6 +16,7 @@
 
 package org.creekservice.api.system.test.gradle.plugin.debug;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -25,6 +26,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 /** Util class for finding the AttachMe agent jar */
+@SuppressFBWarnings(
+        value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE",
+        justification = "Path.getFileName() will not return null for real file paths")
 final class AttachMeAgentJarFinder {
 
     private static final PathMatcher JAR_MATCHER =
