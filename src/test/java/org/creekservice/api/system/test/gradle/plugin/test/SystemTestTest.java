@@ -157,7 +157,7 @@ class SystemTestTest extends TaskTestBase {
 
         // Then:
         assertThat(result.task(TASK_NAME).getOutcome(), is(SUCCESS));
-        assertThat(result.getOutput(), containsString("SystemTestExecutor: 0.4.4"));
+        assertThat(result.getOutput(), containsString("SystemTestExecutor: 0.4.3"));
     }
 
     @CartesianTest(name = "{displayName} flavour={0}, gradleVersion={1}")
