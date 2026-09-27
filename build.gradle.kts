@@ -39,12 +39,12 @@ allprojects {
 }
 
 val creekVersion = project.version
-val spotBugsVersion: String by project
-val guavaVersion: String by project
-val log4jVersion: String by project
-val junitVersion: String by project
-val junitPioneerVersion: String by project
-val mockitoVersion: String by project
+val spotBugsVersion = project.property("spotBugsVersion") as String
+val guavaVersion = project.property("guavaVersion") as String
+val log4jVersion = project.property("log4jVersion") as String
+val junitVersion = project.property("junitVersion") as String
+val junitPioneerVersion = project.property("junitPioneerVersion") as String
+val mockitoVersion = project.property("mockitoVersion") as String
 
 dependencies {
     implementation("com.github.spotbugs:spotbugs-annotations:$spotBugsVersion")
