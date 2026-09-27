@@ -39,15 +39,10 @@ allprojects {
 }
 
 val creekVersion = project.version
-val spotBugsVersion = project.property("spotBugsVersion") as String
-val guavaVersion = project.property("guavaVersion") as String
-val log4jVersion = project.property("log4jVersion") as String
 val junitVersion = project.property("junitVersion") as String
-val junitPioneerVersion = project.property("junitPioneerVersion") as String
-val mockitoVersion = project.property("mockitoVersion") as String
 
 dependencies {
-    implementation("com.github.spotbugs:spotbugs-annotations:$spotBugsVersion")
+    implementation("com.github.spotbugs:spotbugs-annotations:${property("spotBugsVersion")}")
     // Avoid non-test dependencies in plugins.
 
     testImplementation("org.creekservice:creek-test-hamcrest:$creekVersion")
@@ -55,10 +50,10 @@ dependencies {
     testImplementation("org.creekservice:creek-test-conformity:$creekVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
-    testImplementation("org.junit-pioneer:junit-pioneer:$junitPioneerVersion")
-    testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
-    testImplementation("com.google.guava:guava-testlib:$guavaVersion")
-    testRuntimeOnly("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
+    testImplementation("org.junit-pioneer:junit-pioneer:${property("junitPioneerVersion")}")
+    testImplementation("org.mockito:mockito-junit-jupiter:${property("mockitoVersion")}")
+    testImplementation("com.google.guava:guava-testlib:${property("guavaVersion")}")
+    testRuntimeOnly("org.apache.logging.log4j:log4j-slf4j2-impl:${property("log4jVersion")}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
     // The following dependency is only added to force GitHub Dependency Bot to take the executor version into account
     testRuntimeOnly("org.creekservice:creek-system-test-executor:$creekVersion")
